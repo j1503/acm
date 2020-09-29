@@ -36,7 +36,7 @@ bool hookedfunctions::hkwglSwapBuffers(HDC hdC)
 			auto& o = globals::MemoryManager->entityList[i]->origin;
 		}
 	}
-	if (GetAsyncKeyState(globals::Config->general.ejectKey) & 1) {
+	if (GetAsyncKeyState(globals::ConfigManager->getActiveProfile().general.ejectKey) & 1) {
 		globals::HookManager->uninstall();
 		return true;
 	}
