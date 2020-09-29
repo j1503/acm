@@ -2485,7 +2485,7 @@ namespace nlohmann
 		json.exception.invalid_iterator.211 | passed iterators may not belong to container | The iterator range passed to the insert function must not be a subrange of the container to insert to.
 		json.exception.invalid_iterator.212 | cannot compare iterators of different containers | When two iterators are compared, they must belong to the same container.
 		json.exception.invalid_iterator.213 | cannot compare order of object iterators | The order of object iterators cannot be compared, because JSON objects are unordered.
-		json.exception.invalid_iterator.214 | cannot get value | Cannot get value for iterator: Either the iterator belongs to a null value or it is an iterator to a primitive type (number, boolean, or string), but the iterator is different to @ref begin().
+		json.exception.invalid_iterator.214 | cannot getProfile value | Cannot getProfile value for iterator: Either the iterator belongs to a null value or it is an iterator to a primitive type (number, boolean, or string), but the iterator is different to @ref begin().
 
 		@liveexample{The following code shows how an `invalid_iterator` exception can be
 		caught.,invalid_iterator}
@@ -3016,7 +3016,7 @@ namespace nlohmann
 		template<typename BasicJsonType, typename T, typename = void>
 		struct has_from_json : std::false_type {};
 
-		// trait checking if j.get<T> is valid
+		// trait checking if j.getProfile<T> is valid
 		// use this trait instead of std::is_constructible or std::is_convertible,
 		// both rely on, or make use of implicit conversions, and thus fail when T
 		// has several constructors/operator= (see https://github.com/nlohmann/json/issues/958)
@@ -3580,7 +3580,7 @@ namespace nlohmann
 			std::transform(j.begin(), j.end(),
 				std::inserter(ret, end(ret)), [](const BasicJsonType& i)
 				{
-					// get<BasicJsonType>() returns *this, this won't call a from_json
+					// getProfile<BasicJsonType>() returns *this, this won't call a from_json
 					// method when value_type is BasicJsonType
 					return i.template get<typename ConstructibleArrayType::value_type>();
 				});
@@ -3598,7 +3598,7 @@ namespace nlohmann
 				j.begin(), j.end(), std::inserter(ret, end(ret)),
 				[](const BasicJsonType& i)
 				{
-					// get<BasicJsonType>() returns *this, this won't call a from_json
+					// getProfile<BasicJsonType>() returns *this, this won't call a from_json
 					// method when value_type is BasicJsonType
 					return i.template get<typename ConstructibleArrayType::value_type>();
 				});
@@ -3786,7 +3786,7 @@ namespace nlohmann
 #include <algorithm> // copy
 #include <iterator> // begin, end
 #include <string> // string
-#include <tuple> // tuple, get
+#include <tuple> // tuple, getProfile
 #include <type_traits> // is_same, is_constructible, is_floating_point, is_enum, underlying_type
 #include <utility> // move, forward, declval, pair
 #include <valarray> // valarray
@@ -3797,7 +3797,7 @@ namespace nlohmann
 #include <cstddef> // size_t
 #include <iterator> // input_iterator_tag
 #include <string> // string, to_string
-#include <tuple> // tuple_size, get, tuple_element
+#include <tuple> // tuple_size, getProfile, tuple_element
 
 // #include <nlohmann/detail/meta/type_traits.hpp>
 
@@ -4858,7 +4858,7 @@ namespace nlohmann
 				}
 				else
 				{
-					// get the current character
+					// getProfile the current character
 					const auto wc = input.get_character();
 
 					// UTF-32 to UTF-8 encoding
@@ -4916,7 +4916,7 @@ namespace nlohmann
 				}
 				else
 				{
-					// get the current character
+					// getProfile the current character
 					const auto wc = input.get_character();
 
 					// UTF-16 to UTF-8 encoding
@@ -5975,7 +5975,7 @@ namespace nlohmann
 			/////////////////////
 
 			/*!
-			@brief get codepoint from 4 hex characters following `\u`
+			@brief getProfile codepoint from 4 hex characters following `\u`
 
 			For input "\u c1 c2 c3 c4" the codepoint is:
 			  (c1 * 0x1000) + (c2 * 0x0100) + (c3 * 0x0010) + c4
@@ -6084,7 +6084,7 @@ namespace nlohmann
 
 				while (true)
 				{
-					// get next character
+					// getProfile next character
 					switch (get())
 					{
 						// end of file while parsing string
@@ -7148,7 +7148,7 @@ namespace nlohmann
 			}
 
 			/*
-			@brief get next character from the input
+			@brief getProfile next character from the input
 
 			This function provides the interface to the used input adapter. It does
 			not throw in case the input reached EOF, but returns a
@@ -7187,11 +7187,11 @@ namespace nlohmann
 			}
 
 			/*!
-			@brief unget current character (read it again on next get)
+			@brief unget current character (read it again on next getProfile)
 
 			We implement unget by setting variable next_unget to true. The input is not
 			changed - we just simulate ungetting by modifying chars_read_total,
-			chars_read_current_line, and token_string. The next call to get() will
+			chars_read_current_line, and token_string. The next call to getProfile() will
 			behave as if the unget character is read again.
 			*/
 			void unget()
@@ -7426,7 +7426,7 @@ namespace nlohmann
 			/// the current character
 			char_int_type current = std::char_traits<char_type>::eof();
 
-			/// whether the next get() call should just return current
+			/// whether the next getProfile() call should just return current
 			bool next_unget = false;
 
 			/// the start position of the current token
@@ -9773,7 +9773,7 @@ namespace nlohmann
 
 			bool get_ubjson_high_precision_number()
 			{
-				// get size of following number string
+				// getProfile size of following number string
 				std::size_t size{};
 				auto res = get_ubjson_size_value(size);
 				if (JSON_HEDLEY_UNLIKELY(!res))
@@ -9781,7 +9781,7 @@ namespace nlohmann
 					return res;
 				}
 
-				// get number string
+				// getProfile number string
 				std::vector<char> number_vector;
 				for (std::size_t i = 0; i < size; ++i)
 				{
@@ -9825,7 +9825,7 @@ namespace nlohmann
 			///////////////////////
 
 			/*!
-			@brief get next character from the input
+			@brief getProfile next character from the input
 
 			This function provides the interface to the used input adapter. It does
 			not throw in case the input reached EOF, but returns a -'ve valued
@@ -10506,7 +10506,7 @@ namespace nlohmann
 				}
 			}
 
-			/// get next token from lexer
+			/// getProfile next token from lexer
 			token_type get_token()
 			{
 				return last_token = m_lexer.scan();
@@ -16148,7 +16148,7 @@ namespace nlohmann
 
 			void dump_float(number_float_t x, std::false_type /*is_ieee_single_or_double*/)
 			{
-				// get number of digits for a float -> text -> float round-trip
+				// getProfile number of digits for a float -> text -> float round-trip
 				static constexpr auto d = std::numeric_limits<number_float_t>::max_digits10;
 
 				// the actual conversion
@@ -17562,7 +17562,7 @@ namespace nlohmann
 						current_item.m_value.object->clear();
 					}
 
-					// it's now safe that current_item get destructed
+					// it's now safe that current_item getProfile destructed
 					// since it doesn't have any children
 				}
 
@@ -19086,7 +19086,7 @@ namespace nlohmann
 		// value access //
 		//////////////////
 
-		/// get a boolean (explicit)
+		/// getProfile a boolean (explicit)
 		boolean_t get_impl(boolean_t* /*unused*/) const
 		{
 			if (JSON_HEDLEY_LIKELY(is_boolean()))
@@ -19097,97 +19097,97 @@ namespace nlohmann
 			JSON_THROW(type_error::create(302, "type must be boolean, but is " + std::string(type_name())));
 		}
 
-		/// get a pointer to the value (object)
+		/// getProfile a pointer to the value (object)
 		object_t* get_impl_ptr(object_t* /*unused*/) noexcept
 		{
 			return is_object() ? m_value.object : nullptr;
 		}
 
-		/// get a pointer to the value (object)
+		/// getProfile a pointer to the value (object)
 		constexpr const object_t* get_impl_ptr(const object_t* /*unused*/) const noexcept
 		{
 			return is_object() ? m_value.object : nullptr;
 		}
 
-		/// get a pointer to the value (array)
+		/// getProfile a pointer to the value (array)
 		array_t* get_impl_ptr(array_t* /*unused*/) noexcept
 		{
 			return is_array() ? m_value.array : nullptr;
 		}
 
-		/// get a pointer to the value (array)
+		/// getProfile a pointer to the value (array)
 		constexpr const array_t* get_impl_ptr(const array_t* /*unused*/) const noexcept
 		{
 			return is_array() ? m_value.array : nullptr;
 		}
 
-		/// get a pointer to the value (string)
+		/// getProfile a pointer to the value (string)
 		string_t* get_impl_ptr(string_t* /*unused*/) noexcept
 		{
 			return is_string() ? m_value.string : nullptr;
 		}
 
-		/// get a pointer to the value (string)
+		/// getProfile a pointer to the value (string)
 		constexpr const string_t* get_impl_ptr(const string_t* /*unused*/) const noexcept
 		{
 			return is_string() ? m_value.string : nullptr;
 		}
 
-		/// get a pointer to the value (boolean)
+		/// getProfile a pointer to the value (boolean)
 		boolean_t* get_impl_ptr(boolean_t* /*unused*/) noexcept
 		{
 			return is_boolean() ? &m_value.boolean : nullptr;
 		}
 
-		/// get a pointer to the value (boolean)
+		/// getProfile a pointer to the value (boolean)
 		constexpr const boolean_t* get_impl_ptr(const boolean_t* /*unused*/) const noexcept
 		{
 			return is_boolean() ? &m_value.boolean : nullptr;
 		}
 
-		/// get a pointer to the value (integer number)
+		/// getProfile a pointer to the value (integer number)
 		number_integer_t* get_impl_ptr(number_integer_t* /*unused*/) noexcept
 		{
 			return is_number_integer() ? &m_value.number_integer : nullptr;
 		}
 
-		/// get a pointer to the value (integer number)
+		/// getProfile a pointer to the value (integer number)
 		constexpr const number_integer_t* get_impl_ptr(const number_integer_t* /*unused*/) const noexcept
 		{
 			return is_number_integer() ? &m_value.number_integer : nullptr;
 		}
 
-		/// get a pointer to the value (unsigned number)
+		/// getProfile a pointer to the value (unsigned number)
 		number_unsigned_t* get_impl_ptr(number_unsigned_t* /*unused*/) noexcept
 		{
 			return is_number_unsigned() ? &m_value.number_unsigned : nullptr;
 		}
 
-		/// get a pointer to the value (unsigned number)
+		/// getProfile a pointer to the value (unsigned number)
 		constexpr const number_unsigned_t* get_impl_ptr(const number_unsigned_t* /*unused*/) const noexcept
 		{
 			return is_number_unsigned() ? &m_value.number_unsigned : nullptr;
 		}
 
-		/// get a pointer to the value (floating-point number)
+		/// getProfile a pointer to the value (floating-point number)
 		number_float_t* get_impl_ptr(number_float_t* /*unused*/) noexcept
 		{
 			return is_number_float() ? &m_value.number_float : nullptr;
 		}
 
-		/// get a pointer to the value (floating-point number)
+		/// getProfile a pointer to the value (floating-point number)
 		constexpr const number_float_t* get_impl_ptr(const number_float_t* /*unused*/) const noexcept
 		{
 			return is_number_float() ? &m_value.number_float : nullptr;
 		}
 
-		/// get a pointer to the value (binary)
+		/// getProfile a pointer to the value (binary)
 		binary_t* get_impl_ptr(binary_t* /*unused*/) noexcept
 		{
 			return is_binary() ? m_value.binary : nullptr;
 		}
 
-		/// get a pointer to the value (binary)
+		/// getProfile a pointer to the value (binary)
 		constexpr const binary_t* get_impl_ptr(const binary_t* /*unused*/) const noexcept
 		{
 			return is_binary() ? m_value.binary : nullptr;
@@ -19223,7 +19223,7 @@ namespace nlohmann
 		/// Direct access to the stored value of a JSON value.
 		/// @{
 		/*!
-		@brief get special-case overload
+		@brief getProfile special-case overload
 
 		This overloads avoids a lot of template boilerplate, it can be seen as the
 		identity method
@@ -19245,7 +19245,7 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get special-case overload
+		@brief getProfile special-case overload
 
 		This overloads converts the current @ref basic_json in a different
 		@ref basic_json type
@@ -19268,7 +19268,7 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get a value (explicit)
+		@brief getProfile a value (explicit)
 
 		Explicit type conversion between the JSON value and a compatible value
 		which is [CopyConstructible](https://en.cppreference.com/w/cpp/named_req/CopyConstructible)
@@ -19316,7 +19316,7 @@ namespace nlohmann
 				JSONSerializer<ValueType>::from_json(std::declval<const basic_json_t&>(), std::declval<ValueType&>())))
 		{
 			// we cannot static_assert on ValueTypeCV being non-const, because
-			// there is support for get<const basic_json_t>(), which is why we
+			// there is support for getProfile<const basic_json_t>(), which is why we
 			// still need the uncvref
 			static_assert(!std::is_reference<ValueTypeCV>::value,
 				"get() cannot be used with reference types, you might want to use get_ref()");
@@ -19329,7 +19329,7 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get a value (explicit); special case
+		@brief getProfile a value (explicit); special case
 
 		Explicit type conversion between the JSON value and a compatible value
 		which is **not** [CopyConstructible](https://en.cppreference.com/w/cpp/named_req/CopyConstructible)
@@ -19372,7 +19372,7 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get a value (explicit)
+		@brief getProfile a value (explicit)
 
 		Explicit type conversion between the JSON value and a compatible value.
 		The value is filled into the input parameter by calling the @ref json_serializer<ValueType>
@@ -19442,7 +19442,7 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get a pointer value (implicit)
+		@brief getProfile a pointer value (implicit)
 
 		Implicit pointer access to the internally stored JSON value. No copies are
 		made.
@@ -19476,7 +19476,7 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get a pointer value (implicit)
+		@brief getProfile a pointer value (implicit)
 		@copydoc get_ptr()
 		*/
 		template < typename PointerType, typename std::enable_if <
@@ -19489,7 +19489,7 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get a pointer value (explicit)
+		@brief getProfile a pointer value (explicit)
 
 		Explicit pointer access to the internally stored JSON value. No copies are
 		made.
@@ -19524,8 +19524,8 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get a pointer value (explicit)
-		@copydoc get()
+		@brief getProfile a pointer value (explicit)
+		@copydoc getProfile()
 		*/
 		template<typename PointerType, typename std::enable_if<
 			std::is_pointer<PointerType>::value, int>::type = 0>
@@ -19536,7 +19536,7 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get a reference value (implicit)
+		@brief getProfile a reference value (implicit)
 
 		Implicit reference access to the internally stored JSON value. No copies
 		are made.
@@ -19570,7 +19570,7 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get a reference value (implicit)
+		@brief getProfile a reference value (implicit)
 		@copydoc get_ref()
 		*/
 		template < typename ReferenceType, typename std::enable_if <
@@ -19583,10 +19583,10 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief get a value (implicit)
+		@brief getProfile a value (implicit)
 
 		Implicit type conversion between the JSON value and a compatible value.
-		The call is realized by calling @ref get() const.
+		The call is realized by calling @ref getProfile() const.
 
 		@tparam ValueType non-pointer type compatible to the JSON value, for
 		instance `int` for JSON integer numbers, `bool` for JSON booleans, or
@@ -19624,7 +19624,7 @@ namespace nlohmann
 			, int >::type = 0 >
 			JSON_EXPLICIT operator ValueType() const
 		{
-			// delegate the call to get<>() const
+			// delegate the call to getProfile<>() const
 			return get<ValueType>();
 		}
 
@@ -23687,7 +23687,7 @@ namespace nlohmann
 		and the keys may not contain U+0000, since they are serialized a
 		zero-terminated c-strings.
 
-		@throw out_of_range.407  if `j.is_number_unsigned() && j.get<std::uint64_t>() > 9223372036854775807`
+		@throw out_of_range.407  if `j.is_number_unsigned() && j.getProfile<std::uint64_t>() > 9223372036854775807`
 		@throw out_of_range.409  if a key in `j` contains a NULL (U+0000)
 		@throw type_error.317    if `!j.is_object()`
 
@@ -24595,7 +24595,7 @@ namespace nlohmann
 					result.at(top_pointer);
 				}
 
-				// get reference to parent of JSON pointer ptr
+				// getProfile reference to parent of JSON pointer ptr
 				const auto last_path = ptr.back();
 				ptr.pop_back();
 				basic_json& parent = result[ptr];
@@ -24641,7 +24641,7 @@ namespace nlohmann
 			// wrapper for "remove" operation; remove value at ptr
 			const auto operation_remove = [&result](json_pointer& ptr)
 			{
-				// get reference to parent of JSON pointer ptr
+				// getProfile reference to parent of JSON pointer ptr
 				const auto last_path = ptr.back();
 				ptr.pop_back();
 				basic_json& parent = result.at(ptr);
@@ -24676,7 +24676,7 @@ namespace nlohmann
 			// iterate and apply the operations
 			for (const auto& val : json_patch)
 			{
-				// wrapper to get a value for an operation
+				// wrapper to getProfile a value for an operation
 				const auto get_value = [&val](const std::string& op,
 					const std::string& member,
 					bool string_type) -> basic_json&
