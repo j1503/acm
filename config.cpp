@@ -18,12 +18,17 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::general_conf, menuShow
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::esp_conf, active, enemyColor, allyColor);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::aimbot_conf, active);
 
-configManager::config::config(configManager& parent, std::string name)
-	: parent(parent), name(name)
+// config
+configManager::config::config(configManager& parent)
+	: parent(parent)
 {}
+
+configManager::config::config(configManager& parent, std::string name)
+	: parent(parent), name(name) {}
 
 void configManager::config::load(json& j)
 {
+	this->name = j["name"];
 	this->general = j["general"];
 	this->esp = j["esp"];
 	this->aimbot = j["aimbot"];
@@ -44,6 +49,7 @@ void configManager::config::reset() noexcept
 std::string configManager::config::toString() const noexcept
 {
 	json j;
+	j["name"] = this->name;
 	j["general"] = this->general;
 	j["esp"] = this->esp;
 	j["aimbot"] = this->aimbot;
@@ -66,29 +72,32 @@ configManager::configManager()
 	}
 }
 
+// configManager
 configManager::~configManager()
 {
 	this->saveFile();
 	CloseHandle(this->hFile);
 }
 
-void configManager::changeProfileName(std::string currentName, std::string newName) noexcept
+bool configManager::renameProfile(std::string currentName, std::string newName) noexcept
 {
-	configManager::config& c = this->findProfileByName(currentName);
+	if (!this->isUniqueProfileName(newName)) return false;
+	auto& c = this->findProfileByName(currentName);
 	c.name = newName;
 	this->saveFile();
+	return true;
 }
 
 void configManager::setActiveProfile(std::string name) noexcept
 {
-	for (size_t i = 0; i < this->configs.size(); ++i) {
-		if (this->configs[i]->name == name) this->activeIdx = i;
+	for (size_t i = 0; i < this->profiles.size(); ++i) {
+		if (this->profiles[i]->name == name) this->activeIdx = i;
 	}
 }
 
 configManager::config& configManager::getActiveProfile() noexcept
 {
-	return *this->configs[activeIdx];
+	return *this->profiles[activeIdx];
 }
 
 configManager::config& configManager::getProfile(std::string name) noexcept
@@ -96,28 +105,31 @@ configManager::config& configManager::getProfile(std::string name) noexcept
 	return this->findProfileByName(name);
 }
 
-void configManager::createProfile(std::string name) noexcept
+bool configManager::createProfile(std::string name) noexcept
 {
-	if (!this->isUniqueProfileName(name)) return;
+	if (!this->isUniqueProfileName(name)) return false;
 	else {
-		this->configs.emplace_back(std::make_unique<configManager::config>(*this, name));
-		this->activeIdx = this->configs.size() - 1;
+		this->profiles.emplace_back(std::make_unique<configManager::config>(*this, name));
+		this->activeIdx = this->profiles.size() - 1;
+		return true;
 	}
 }
 
-void configManager::deleteProfile(std::string name) noexcept
+bool configManager::deleteProfile(std::string name) noexcept
 {
-	for (size_t i = 0; i < this->configs.size(); ++i) {
-		if (this->configs[i]->name == name) {
-			this->configs.erase(this->configs.begin() + i);
+	for (size_t i = 0; i < this->profiles.size(); ++i) {
+		if (this->profiles[i]->name == name) {
+			this->profiles.erase(this->profiles.begin() + i);
 			--this->activeIdx;
+			return true;
 		}
 	}
+	return false;
 }
 
 configManager::config& configManager::findProfileByName(std::string& name)
 {
-	for (auto& c : this->configs) {
+	for (auto& c : this->profiles) {
 		if (c->name == name) {
 			return *c;
 		}
@@ -127,7 +139,7 @@ configManager::config& configManager::findProfileByName(std::string& name)
 
 bool configManager::isUniqueProfileName(std::string& name) const noexcept
 {
-	for (auto& c : this->configs) {
+	for (auto& c : this->profiles) {
 		if (c->name == name) return false;
 	}
 	return true;
@@ -137,9 +149,9 @@ void configManager::createDefault() noexcept
 {
 	this->activeIdx = 0;
 	this->clearFile();
-	this->configs.emplace_back(std::make_unique<configManager::config>(*this, "profile-1"));
-	this->configs.emplace_back(std::make_unique<configManager::config>(*this, "profile-2"));
-	this->configs.emplace_back(std::make_unique<configManager::config>(*this, "profile-3"));
+	this->profiles.emplace_back(std::make_unique<configManager::config>(*this, "profile-1"));
+	this->profiles.emplace_back(std::make_unique<configManager::config>(*this, "profile-2"));
+	this->profiles.emplace_back(std::make_unique<configManager::config>(*this, "profile-3"));
 	this->saveFile();
 }
 
@@ -156,7 +168,7 @@ void configManager::loadFile()
 	try {
 		// parse json and throw (-> create default) if empty
 		j = json::parse(buf.get());
-		if (j[PROFILES_KEY_NAME].empty()) throw std::exception();
+		if (j[PROFILES_KEY_NAME].empty()) throw std::length_error("");
 		// getProfile active profile, if the key is found, else set it to the first profile
 		auto active = j.find("active");
 		if (active != j.end()) {
@@ -165,13 +177,10 @@ void configManager::loadFile()
 		else {
 			this->activeIdx = 0;
 		}
-		this->configs.clear(); // clear current array of profiles, incase
+		this->profiles.clear(); // clear current array of profiles
 		// fill profiles with data from json
-		size_t idx = 0;
-		for (auto& [key, value] : j[PROFILES_KEY_NAME].items()) {
-			this->configs.emplace_back(std::make_unique<configManager::config>(*this, key));
-			this->configs[idx]->load(value);
-			++idx;
+		for (auto& c : j[PROFILES_KEY_NAME]) {
+			this->profiles.emplace_back(std::make_unique<configManager::config>(*this))->load(c);
 		}
 	}
 	catch (...) { /*json::parse_error& e*/
@@ -185,8 +194,8 @@ void configManager::saveFile() noexcept
 {
 	// getProfile current settings as json dump
 	json j;
-	for (auto& c : this->configs) {
-		j[PROFILES_KEY_NAME][c->name] = json::parse(c->toString());
+	for (auto& c : this->profiles) {
+		j[PROFILES_KEY_NAME].push_back(json::parse(c->toString()));
 	}
 	j["active"] = this->activeIdx;
 	std::string x = j.dump(4, ' ', true);

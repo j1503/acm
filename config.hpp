@@ -14,6 +14,7 @@ public:
 		friend class configManager;
 	public:
 		config() = default;
+		config(configManager& parent);
 		config(configManager& parent, std::string name);
 		void load(nlohmann::json& j);
 		void save() noexcept;
@@ -42,12 +43,13 @@ public:
 public:
 	configManager();
 	~configManager();
-	void changeProfileName(std::string currentName, std::string newName) noexcept;
-	void setActiveProfile(std::string name) noexcept;
+	// crud
+	bool createProfile(std::string name) noexcept;
 	configManager::config& getActiveProfile() noexcept;
 	configManager::config& getProfile(std::string name) noexcept;
-	void createProfile(std::string name) noexcept;
-	void deleteProfile(std::string name) noexcept;
+	void setActiveProfile(std::string name) noexcept;
+	bool renameProfile(std::string currentName, std::string newName) noexcept;
+	bool deleteProfile(std::string name) noexcept;
 private:
 	configManager::config& findProfileByName(std::string& name);
 	bool isUniqueProfileName(std::string& name) const noexcept;
@@ -56,14 +58,13 @@ private:
 	void saveFile() noexcept;
 	void clearFile() noexcept;
 	static bool fileExists(const char* path) noexcept;
+public:
+	std::vector<std::unique_ptr<configManager::config>> profiles;
 private:
 	size_t activeIdx;
-	std::vector<std::unique_ptr<configManager::config>> configs;
 	HANDLE hFile;
 	char path[MAX_PATH];
 };
-
-// globals::configManager.getConfig("1")
 
 namespace globals {
 	inline std::unique_ptr<configManager> ConfigManager;

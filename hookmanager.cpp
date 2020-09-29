@@ -13,11 +13,6 @@ static LRESULT __stdcall wndProcThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 	globals::MemoryManager = std::make_unique<memory::memoryManager>();
 	globals::ConfigManager = std::make_unique<configManager>();
 
-	globals::ConfigManager->createProfile("main");
-	globals::ConfigManager->deleteProfile("main");
-
-	auto& p = globals::ConfigManager->getActiveProfile();
-
 	globals::HookManager->install();
 
 	return wndProc(hWnd, msg, wParam, lParam);
