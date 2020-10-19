@@ -3,9 +3,13 @@
 #pragma once
 
 #include "geom.hpp"
+#include "entity.hpp"
 
 class playerent;
 class bounceent;
+
+struct guninfo { char modelname[23], title[42]; short sound, reload, reloadtime, attackdelay, damage, piercing, projspeed, part, spread, recoil, magsize, mdl_kick_rot, mdl_kick_back, recoilincrease, recoilbase, maxrecoil, recoilbackfade, pushfactor; bool isauto; };
+
 
 struct weapon
 {
@@ -18,7 +22,7 @@ struct weapon
 
 	int type;
 	playerent* owner;
-	const struct guninfo& info;
+	struct guninfo& info;
 	int& ammo, & mag, & gunwait, shots;
 	virtual int dynspread() {}
 	virtual float dynrecoil() {}

@@ -3,10 +3,11 @@
 #pragma once
 #include <cmath>
 
-#define PI2   (6.283185307f)   /* 2 * PI */
-#define SQRT2 (1.414213562f)
-#define SQRT3 (1.732050808f)
-#define RAD   (0.01745329252f) /* PI / 180 */
+constexpr float PI = 3.1415926535f;
+constexpr float PI2 = 6.283185307f; /* 2 * PI */
+constexpr float SQRT2 = 1.414213562f;
+constexpr float SQRT3 = 1.732050808f;
+constexpr float RAD = 0.01745329252f; /* PI / 180 */
 
 struct vec
 {
@@ -85,6 +86,22 @@ struct vec
 		v[(i + 1) % 3] = -d[i];
 		v[(i + 2) % 3] = 0;
 	}
+};
+
+constexpr float D2R(float degree);
+
+constexpr float R2D(float radian);
+
+// v = { x, y, z }
+// result = { r, phi, theta } = { radius, yaw, pitch }
+vec vectorAngle(const vec& v);
+// v = { radius, phi, theta } = { radius, yaw, pitch }
+// result = { x, y, z }
+vec angleVector(const vec& v);
+
+template <class T>
+struct vec2 {
+	T x, y;
 };
 
 #endif

@@ -107,7 +107,7 @@ public:
 #define ROLLEFFMAX 30
 #define ROLLEFFDEF 10
 
-#define POSHIST_SIZE 7
+#define POSHIST_SIZE 6
 
 struct poshist
 {
@@ -129,12 +129,12 @@ private:
 public:
 	int clientnum, lastupdate, plag, ping;
 	uint32_t address;
-	int lifesequence;                   // sequence id for each respawn, used in damage test
+	//int lifesequence;                   // sequence id for each respawn, used in damage test
 	int frags, flagscore, deaths, points, tks;
 	int lastaction, lastmove, lastpain, lastvoicecom, lastdeath;
 	int clientrole;
 	bool attacking;
-	char name[MAXNAMELEN];
+	char name[260];
 	int team;
 	int weaponchanging;
 	int nextweapon; // weapon we switch to
@@ -173,5 +173,9 @@ public:
 	int skin(int t = -1) {}
 	void setskin(int t, int s) {}
 };
+
+// own code
+
+playerent* rayIntersectEnt(int* bone, float* dist, float raylength = 1e6f);
 
 #endif
