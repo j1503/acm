@@ -18,6 +18,12 @@
     <Filter Include="cheats">
       <UniqueIdentifier>{4b5a9c6e-92d6-45e2-9b0e-36fdbf3d8acd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gui">
+      <UniqueIdentifier>{29f1761a-3887-4d55-9ab7-7faa0591a485}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\imgui">
+      <UniqueIdentifier>{abbe9133-18ba-465f-8d2c-2699dfc0c3f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sdk\entity.hpp">
@@ -59,6 +65,60 @@
     <ClInclude Include="json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="debugconsole.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="input.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\triggerbot.hpp">
+      <Filter>cheats</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\cheatbase.hpp">
+      <Filter>cheats</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\cheatmanager.hpp">
+      <Filter>cheats</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui\imgui.h">
+      <Filter>gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui\imgui_internal.h">
+      <Filter>gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui\imstb_rectpack.h">
+      <Filter>gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui\imstb_textedit.h">
+      <Filter>gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui\imstb_truetype.h">
+      <Filter>gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\gui.hpp">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui\imconfig.h">
+      <Filter>gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui\imgui_impl_win32.h">
+      <Filter>gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui\imgui_impl_opengl2.h">
+      <Filter>gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="drawing.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\tracelines.hpp">
+      <Filter>cheats</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\ieat.hpp">
+      <Filter>hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\barrelesp.hpp">
+      <Filter>cheats</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -90,6 +150,57 @@
     </ClCompile>
     <ClCompile Include="config.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\geom.cpp">
+      <Filter>sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="debugconsole.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\triggerbot.cpp">
+      <Filter>cheats</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\cheatmanager.cpp">
+      <Filter>cheats</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui\imgui.cpp">
+      <Filter>gui\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui\imgui_draw.cpp">
+      <Filter>gui\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui\imgui_widgets.cpp">
+      <Filter>gui\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui\imgui_impl_win32.cpp">
+      <Filter>gui\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui\imgui_impl_opengl2.cpp">
+      <Filter>gui\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="drawing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\cheatbase.cpp">
+      <Filter>cheats</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\tracelines.cpp">
+      <Filter>cheats</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\ieat.cpp">
+      <Filter>hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\gui.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\barrelesp.cpp">
+      <Filter>cheats</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
