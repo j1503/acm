@@ -1,5 +1,6 @@
 #include "config.hpp"
 #include "hookmanager.hpp"
+
 #include "json.hpp"
 #include <Windows.h>
 #include <exception>
@@ -7,18 +8,33 @@
 #pragma comment(lib,"shlwapi.lib")
 #include "shlobj.h"
 
+#define VALID_INDEX(idx, container) (idx >= 0) && (idx < container.size())
+
 #define CHEAT_NAME "ACM"
 #define PROFILES_KEY_NAME "profiles"
 
 using json = nlohmann::json;
 using namespace std::string_literals;
 
-// custom to_json functions
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::general_conf, menuShown, menuKey, ejectKey);
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::esp_conf, active, enemyColor, allyColor);
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::aimbot_conf, active);
+/*
+Add a new cheat:
+1. implement abstract class (hpp+cpp file, inherit from base)
+2. add config 
+3. add to cheatmanager
+4. add run() to main/hk
+(5. add to gui) 
+*/
 
-// config
+// custom to_json functions
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::menu_conf, active, menuKey, ejectKey);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::misc_conf, supersecret);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::esp_conf, active, enemyColor, allyColor);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::aimbot_conf, active, friendlyfire, showcircle, circlecolor, autoshoot, targetLock, smoothing, smoothvalue, fov);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::triggerbot_conf, active, friendlyfire);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::tracelines_conf, active, enemyColor, allyColor, linewidth, teammates);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::barrelesp_conf, active, enemyColor, allyColor, linewidth, linelength, teammates);
+
+// options
 configManager::config::config(configManager& parent)
 	: parent(parent)
 {}
@@ -29,9 +45,13 @@ configManager::config::config(configManager& parent, std::string name)
 void configManager::config::load(json& j)
 {
 	this->name = j["name"];
-	this->general = j["general"];
+	//this->general = j["general"];
+	this->misc = j["misc"];
 	this->esp = j["esp"];
 	this->aimbot = j["aimbot"];
+	this->triggerbot = j["triggerbot"];
+	this->tracelines = j["tracelines"];
+	this->barrelesp = j["barrelesp"];
 }
 
 void configManager::config::save() noexcept
@@ -41,22 +61,31 @@ void configManager::config::save() noexcept
 
 void configManager::config::reset() noexcept
 {
-	this->general = general_conf{};
+	this->general = menu_conf{};
+	this->misc = misc_conf{};
 	this->esp = esp_conf{};
 	this->aimbot = aimbot_conf{};
+	this->triggerbot = triggerbot_conf{};
+	this->tracelines = tracelines_conf{};
+	this->barrelesp = barrelesp_conf{};
 }
 
 std::string configManager::config::toString() const noexcept
 {
 	json j;
 	j["name"] = this->name;
-	j["general"] = this->general;
+	//j["general"] = this->general;
+	j["misc"] = this->misc;
 	j["esp"] = this->esp;
 	j["aimbot"] = this->aimbot;
+	j["triggerbot"] = this->triggerbot;
+	j["tracelines"] = this->tracelines;
+	j["barrelesp"] = this->barrelesp;
 	return j.dump(4, ' ', true);
 }
 
-configManager::configManager()
+configManager::configManager(HWND hWnd)
+	: hWnd(hWnd)
 {
 	SHGetFolderPath(0, CSIDL_COMMON_APPDATA | CSIDL_FLAG_CREATE, 0, 0, this->path);
 	PathAppend(this->path, CHEAT_NAME);
@@ -88,10 +117,32 @@ bool configManager::renameProfile(std::string currentName, std::string newName) 
 	return true;
 }
 
+bool configManager::renameProfile(size_t index, std::string newName) noexcept
+{
+	if (VALID_INDEX(index, this->profiles)) {
+		this->profiles[index]->name = newName;
+		this->saveFile();
+		return true;
+	}
+	return false;
+}
+
 void configManager::setActiveProfile(std::string name) noexcept
 {
 	for (size_t i = 0; i < this->profiles.size(); ++i) {
-		if (this->profiles[i]->name == name) this->activeIdx = i;
+		if (this->profiles[i]->name == name) {
+			this->activeIdx = i;
+			globals::ActiveProfile = this->profiles[this->activeIdx].get();
+			return;
+		}
+	}
+}
+
+void configManager::setActiveProfile(size_t index) noexcept
+{
+	if (VALID_INDEX(index, this->profiles)) {
+		this->activeIdx = index;
+		globals::ActiveProfile = this->profiles[this->activeIdx].get();
 	}
 }
 
@@ -105,12 +156,21 @@ configManager::config& configManager::getProfile(std::string name) noexcept
 	return this->findProfileByName(name);
 }
 
+configManager::config& configManager::getProfile(size_t index) noexcept
+{
+	if (VALID_INDEX(index, this->profiles)) {
+		return *this->profiles[index];
+	}
+	return this->getActiveProfile();
+}
+
 bool configManager::createProfile(std::string name) noexcept
 {
 	if (!this->isUniqueProfileName(name)) return false;
 	else {
 		this->profiles.emplace_back(std::make_unique<configManager::config>(*this, name));
 		this->activeIdx = this->profiles.size() - 1;
+		globals::ActiveProfile = this->profiles[this->activeIdx].get();
 		return true;
 	}
 }
@@ -121,8 +181,22 @@ bool configManager::deleteProfile(std::string name) noexcept
 		if (this->profiles[i]->name == name) {
 			this->profiles.erase(this->profiles.begin() + i);
 			--this->activeIdx;
+			if (this->activeIdx < 0) this->activeIdx = 0;
+			globals::ActiveProfile = this->profiles[this->activeIdx].get();
 			return true;
 		}
+	}
+	return false;
+}
+
+bool configManager::deleteProfile(size_t index) noexcept
+{
+	if (VALID_INDEX(index, this->profiles)) {
+		this->profiles.erase(this->profiles.begin() + index);
+		--this->activeIdx;
+		if (this->activeIdx < 0) this->activeIdx = 0;
+		globals::ActiveProfile = this->profiles[this->activeIdx].get();
+		return true;
 	}
 	return false;
 }
@@ -134,7 +208,7 @@ configManager::config& configManager::findProfileByName(std::string& name)
 			return *c;
 		}
 	}
-	throw std::runtime_error("findProfileByName: Profile not found");
+	return this->getActiveProfile();
 }
 
 bool configManager::isUniqueProfileName(std::string& name) const noexcept
@@ -149,10 +223,12 @@ void configManager::createDefault() noexcept
 {
 	this->activeIdx = 0;
 	this->clearFile();
+	this->profiles.clear();
 	this->profiles.emplace_back(std::make_unique<configManager::config>(*this, "profile-1"));
 	this->profiles.emplace_back(std::make_unique<configManager::config>(*this, "profile-2"));
 	this->profiles.emplace_back(std::make_unique<configManager::config>(*this, "profile-3"));
 	this->saveFile();
+	globals::ActiveProfile = this->profiles[this->activeIdx].get();
 }
 
 void configManager::loadFile()
@@ -172,7 +248,7 @@ void configManager::loadFile()
 		// getProfile active profile, if the key is found, else set it to the first profile
 		auto active = j.find("active");
 		if (active != j.end()) {
-			this->activeIdx = active.value().get<size_t>();
+			this->activeIdx = active.value().get<int>();
 		}
 		else {
 			this->activeIdx = 0;
@@ -182,11 +258,10 @@ void configManager::loadFile()
 		for (auto& c : j[PROFILES_KEY_NAME]) {
 			this->profiles.emplace_back(std::make_unique<configManager::config>(*this))->load(c);
 		}
+		globals::ActiveProfile = this->profiles[this->activeIdx].get();
 	}
 	catch (...) { /*json::parse_error& e*/
-		std::string errorString = "Your configuration had to be reset due to a corruption in the config file at "s + std::string(this->path);
-		MessageBox(globals::HookManager->hWnd, errorString.c_str(), "Information", MB_OK | MB_ICONEXCLAMATION);
-		this->createDefault();
+		this->resetProfiles();
 	}
 }
 
@@ -209,6 +284,20 @@ void configManager::clearFile() noexcept
 {
 	CloseHandle(this->hFile);
 	this->hFile = CreateFile(this->path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+}
+
+void configManager::resetProfiles() noexcept
+{
+	std::string errorString = "Your configuration had to be reset due to a corruption in the config file at "s + std::string(this->path);
+	this->createDefault();
+	LONG_PTR wndprocb4 = GetWindowLongPtr(hWnd, GWLP_WNDPROC);
+	SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)globals::HookManager->originalWndProc); // fallback to originalWndProc to click messagebox
+	// this is required because the custom wndproc depends on ConfigManager and will otherwise crash
+	int id = MessageBox(this->hWnd, errorString.c_str(), "Information", MB_OK | MB_ICONEXCLAMATION);
+	if (id != IDOK)
+		return globals::HookManager->uninstall();
+	else
+		SetWindowLongPtr(hWnd, GWLP_WNDPROC, wndprocb4);
 }
 
 bool configManager::fileExists(const char* path) noexcept
