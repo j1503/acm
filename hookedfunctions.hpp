@@ -3,10 +3,12 @@
 #pragma once
 
 #include <Windows.h>
-#include "hookmanager.hpp"
+#include <SDL.h>
 
 namespace hookedfunctions {
-	bool hkwglSwapBuffers(HDC hdC);
+	//bool hkwglSwapBuffers(HDC hdC);
+	int hkSDL_PollEvent(SDL_Event* event);
+	void hkSDL_GL_SwapBuffers();
 }
 
 #endif
