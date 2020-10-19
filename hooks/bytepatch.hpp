@@ -14,7 +14,15 @@ namespace hooks {
 		~trampoline();
 		void hook() noexcept;
 		void restore() noexcept;
-		void* getGateway() const noexcept;
+		[[nodiscard]] void* getGateway() const noexcept;
+		template<class RET, class ...ARGS>
+		[[nodiscard]] inline auto getGatewayCdecl() const noexcept {
+			return reinterpret_cast<RET(__cdecl*)(ARGS...)>(this->gateway);
+		}
+		template<class RET, class ...ARGS>
+		[[nodiscard]] inline auto getGatewayStdcall() const noexcept {
+			return reinterpret_cast<RET(__stdcall*)(ARGS...)>(this->gateway);
+		}
 	private:
 		uintptr_t src;
 		uintptr_t dst;

@@ -1,9 +1,10 @@
 #include "vmt.hpp"
+
 #include <Windows.h>
 #include <algorithm>
 #include <cassert>
 
-#define VALID_INDEX(idx) (idx >= 0) && (idx < this->length)
+#define VALID_INDEX(idx, len) (idx >= 0) && (idx < len)
 
 hooks::vmt::vmt(void* vtableBase, bool virtualprotect)
 	: vtable(vtableBase), virtualprotect(virtualprotect)
@@ -28,7 +29,7 @@ hooks::vmt::~vmt()
 
 void hooks::vmt::hook(const size_t index, void* function) noexcept
 {
-	assert(VALID_INDEX(index));
+	assert(VALID_INDEX(index, this->length));
 	if (!this->active[index]) {
 		void* vtablefuncaddr = (unsigned char*)this->vtable + index * sizeof(void*);
 		if (this->virtualprotect) {
@@ -43,7 +44,7 @@ void hooks::vmt::hook(const size_t index, void* function) noexcept
 
 void hooks::vmt::restore(const size_t index) noexcept
 {
-	assert(VALID_INDEX(index));
+	assert(VALID_INDEX(index, this->length));
 	if (this->active[index]) {
 		void* vtablefuncaddr = (unsigned char*)this->vtable + index * sizeof(void*);
 		if (this->virtualprotect) {
@@ -94,7 +95,7 @@ hooks::vmtswap::~vmtswap()
 
 void hooks::vmtswap::hook(const size_t index, void* function)
 {
-	assert(VALID_INDEX(index));
+	assert(VALID_INDEX(index, this->length));
 	if (!this->active[index]) {
 		this->vtableswapped[index] = (uintptr_t)function;
 		this->active[index] = true;
@@ -103,7 +104,7 @@ void hooks::vmtswap::hook(const size_t index, void* function)
 
 void hooks::vmtswap::restore(const size_t index)
 {
-	assert(VALID_INDEX(index));
+	assert(VALID_INDEX(index, this->length));
 	if (this->active[index]) {
 		this->vtableswapped[index] = this->originalvTableBase[index];
 		this->active[index] = false;

@@ -5,14 +5,14 @@
 #include <Windows.h>
 
 hooks::trampoline::trampoline(const char* moduleName, const char* functionName, void* dst, const size_t bytes)
-	: dst(uintptr_t(dst)), length(bytes), active(false)
+	: dst(uintptr_t(dst)), length(bytes), active(false), gateway(0)
 {
 	assert(bytes > 4);
 	this->src = (uintptr_t)helper::getExportedProcAddress(moduleName, functionName);
 }
 
 hooks::trampoline::trampoline(void* src, void* dst, const size_t bytes)
-	: src(uintptr_t(src)), dst(uintptr_t(dst)), length(bytes), active(false)
+	: src(uintptr_t(src)), dst(uintptr_t(dst)), length(bytes), active(false), gateway(0)
 {
 	assert(bytes > 4);
 }

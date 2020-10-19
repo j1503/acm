@@ -7,6 +7,7 @@
 namespace hooks {
 	class vmt {
 	public:
+		vmt() = default;
 		/**
 		* @brief initializes a vtable to be hookable by storing its original state, etc. Note that the destructor of this class restores all hooks,
 		* so there is no need to explicitly call restore on all hooks
@@ -57,6 +58,7 @@ namespace hooks {
 	};
 	class vmtswap {
 	public:
+		vmtswap() = default;
 		vmtswap(void* instance);
 		~vmtswap();
 		void hook(const size_t index, void* function);
