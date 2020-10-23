@@ -42,7 +42,7 @@ hooks::iat::~iat()
 int32_t hooks::iat::findIndex(const char* moduleName, const char* functionName) const
 {
 	if (!moduleName || !functionName) throw std::invalid_argument("nullptr was passed as parameter"); // weird arguments
-	
+
 	PIMAGE_IMPORT_DESCRIPTOR piid = this->importbase;
 	while (piid->Name) {
 		if (!lstrcmpiA(moduleName, (char*)(this->imageBase + piid->Name))) {
