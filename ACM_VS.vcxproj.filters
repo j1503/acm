@@ -110,13 +110,16 @@
     <ClInclude Include="drawing.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cheats\tracelines.hpp">
-      <Filter>cheats</Filter>
-    </ClInclude>
     <ClInclude Include="hooks\ieat.hpp">
       <Filter>hooks</Filter>
     </ClInclude>
     <ClInclude Include="cheats\barrelesp.hpp">
+      <Filter>cheats</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\esp.hpp">
+      <Filter>cheats</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\snaplines.hpp">
       <Filter>cheats</Filter>
     </ClInclude>
   </ItemGroup>
@@ -190,9 +193,6 @@
     <ClCompile Include="cheats\cheatbase.cpp">
       <Filter>cheats</Filter>
     </ClCompile>
-    <ClCompile Include="cheats\tracelines.cpp">
-      <Filter>cheats</Filter>
-    </ClCompile>
     <ClCompile Include="hooks\ieat.cpp">
       <Filter>hooks</Filter>
     </ClCompile>
@@ -200,6 +200,12 @@
       <Filter>gui</Filter>
     </ClCompile>
     <ClCompile Include="cheats\barrelesp.cpp">
+      <Filter>cheats</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\esp.cpp">
+      <Filter>cheats</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\snaplines.cpp">
       <Filter>cheats</Filter>
     </ClCompile>
   </ItemGroup>

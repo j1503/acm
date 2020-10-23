@@ -163,7 +163,8 @@
     <ClInclude Include="cheats\barrelesp.hpp" />
     <ClInclude Include="cheats\cheatbase.hpp" />
     <ClInclude Include="cheats\cheatmanager.hpp" />
-    <ClInclude Include="cheats\tracelines.hpp" />
+    <ClInclude Include="cheats\esp.hpp" />
+    <ClInclude Include="cheats\snaplines.hpp" />
     <ClInclude Include="cheats\triggerbot.hpp" />
     <ClInclude Include="config.hpp" />
     <ClInclude Include="debugconsole.hpp" />
@@ -196,7 +197,8 @@
     <ClCompile Include="cheats\barrelesp.cpp" />
     <ClCompile Include="cheats\cheatbase.cpp" />
     <ClCompile Include="cheats\cheatmanager.cpp" />
-    <ClCompile Include="cheats\tracelines.cpp" />
+    <ClCompile Include="cheats\esp.cpp" />
+    <ClCompile Include="cheats\snaplines.cpp" />
     <ClCompile Include="cheats\triggerbot.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="debugconsole.cpp" />
