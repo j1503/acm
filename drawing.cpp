@@ -25,29 +25,31 @@ void drawing::after2D() noexcept
 	glPopMatrix();
 }
 
-std::optional<vec> drawing::worldToScreen(const vec& wrld)
+bool drawing::worldToScreen(const vec& wrld, vec& screen)
 {
 	assert(globals::MemoryManager);
 	// opengl is column major
 	using mat = float[4][4];
 	mat& vm = *(mat*)globals::MemoryManager->viewMatrix;
+	float width = *globals::MemoryManager->screenWidth;
+	float height = *globals::MemoryManager->screenHeight;
 
-	float x = vm[0][0] * wrld.x + vm[1][0] * wrld.y + vm[2][0] * wrld.z + vm[3][0];
-	float y = vm[0][1] * wrld.x + vm[1][1] * wrld.y + vm[2][1] * wrld.z + vm[3][1];
+	screen.x = vm[0][0] * wrld.x + vm[1][0] * wrld.y + vm[2][0] * wrld.z + vm[3][0];
+	screen.y = vm[0][1] * wrld.x + vm[1][1] * wrld.y + vm[2][1] * wrld.z + vm[3][1];
+	screen.z = vm[0][2] * wrld.x + vm[1][2] * wrld.y + vm[2][2] * wrld.z + vm[3][2];
 	float w = vm[0][3] * wrld.x + vm[1][3] * wrld.y + vm[2][3] * wrld.z + vm[3][3];
 	
-	if (w < 0.01f) return {};
+	if (w < 0.1f) return false;
 
-	float sH = *globals::MemoryManager->screenHeight / 2.0f;
-	float sW = *globals::MemoryManager->screenWidth / 2.0f;
+	vec ndc;
+	ndc.x = screen.x / w;
+	ndc.y = screen.y / w;
+	ndc.z = screen.z / w;
 
-	vec res;
-	res.x = sW + (sW * x / w);
-	res.y = sH - (sH * y / w);
-	res.z = w;
+	screen.x = (width / 2 * ndc.x) + (ndc.x + width / 2);
+	screen.y = -(height / 2 * ndc.y) + (ndc.y + height / 2);
 
-	//auto r = mat * vect;
-	return res;
+	return true;
 }
 
 void drawing::drawLine(const vec2<float> from, const vec2<float> to, float width, const color& color)
@@ -67,24 +69,66 @@ void drawing::drawLine(const vec2<float> from, const vec2<float> to, float width
 
 void drawing::drawLineWorld(const vec& from, const vec& to, float width, const color& color)
 {
-	auto f = drawing::worldToScreen(from);
-	auto t = drawing::worldToScreen(to);
-	if (f.has_value() && t.has_value()) {
-		drawing::drawLine({ f->x, f->y }, { t->x, t->y }, width, color);
+	vec f, t;
+	if (drawing::worldToScreen(from, f) && drawing::worldToScreen(to, t)) {
+		drawing::drawLine({ f.x, f.y }, { t.x, t.y }, width, color);
+
 	}
 }
 
-void drawing::drawBox(const vec2<float>& bottomleft, const vec2<float>& topright, float borderwidth, const color& color)
+void drawing::drawRect(float x1, float y1, float x2, float y2, const color& color, bool filled)
+{
+	glColor4f(color.r, color.g, color.b, color.a);
+
+	glBegin(filled ? GL_QUADS : GL_LINE_LOOP);
+
+	glVertex2f(x1, y1);
+	glVertex2f(x2, y1);
+	glVertex2f(x2, y2);
+	glVertex2f(x1, y2);
+
+	glEnd();
+}
+
+void drawing::drawESPBox(const vec& feet, const vec& head, float width, const color& color)
+{
+	vec sf, sh;//screen feet , screen head
+	if (drawing::worldToScreen(feet, sf) && drawing::worldToScreen(head, sh)) {
+		const float h = sf.y - sh.y;
+		const float w = h / 1.9f;
+		drawing::drawRect(sh.x - w / 2 - 1, sf.y - 1, sh.x + w / 2 + 1, sh.y + 1, colors::black);
+		drawing::drawRect(sh.x - w / 2, sf.y, sh.x + w / 2, sh.y, color);
+	}
+}
+
+void drawing::drawHealthBar(const vec& feet, const vec& head, const int32_t health, float relheight)
+{
+	vec sf, sh;//screen feet , screen head
+	if (drawing::worldToScreen(feet, sf) && drawing::worldToScreen(head, sh)) {
+		const float h = sf.y - sh.y;
+		const float w = h / 1.9f;
+
+		drawing::drawRect(sh.x - w / 2 - 1, sh.y - h * relheight - h * (relheight * 2.5f) - 1, sh.x + w / 2 + 1,
+			sh.y - h * (relheight * 2.5f) + 1, colors::black, false); //outline
+		drawing::drawRect(sh.x - w / 2, sh.y - h * relheight - h * (relheight * 2.5f), sh.x + w / 2,
+			sh.y - h * (relheight * 2.5f), colors::red, true); //red
+		drawing::drawRect(sh.x - w / 2, sh.y - h * relheight - h * (relheight * 2.5f), (sh.x - w / 2) + (w * (float)health / 100.f),
+			sh.y - h * (relheight * 2.5f), colors::green, true); //green 
+	}
+}
+
+void drawing::drawBox(const vec2<float>& bottomleft, const vec2<float>& topright, float borderwidth, const color& color, bool filled)
 {
 	glScalef(1.f, 1.f, 1.f);
 
 	glLineWidth(borderwidth);
 	glColor4f(color.r, color.g, color.b, color.a);
 
-	glBegin(GL_LINE_LOOP);
+	glBegin(filled ? GL_QUADS : GL_LINE_LOOP);
 
-	int h = bottomleft.y - topright.y;
-	int w = topright.x - bottomleft.x;
+	// fabs prob not needed - just to be sure
+	int h = fabs(bottomleft.y - topright.y);
+	int w = fabs(topright.x - bottomleft.x);
 
 	glVertex2f(bottomleft.x, bottomleft.y);
 	glVertex2f(bottomleft.x, bottomleft.y - h);
@@ -92,15 +136,6 @@ void drawing::drawBox(const vec2<float>& bottomleft, const vec2<float>& topright
 	glVertex2f(topright.x, topright.y + h);
 
 	glEnd();
-}
-
-void drawing::drawBoxWorld(const vec& bottomleft, const vec& topright, float borderwidth, const color& color)
-{
-	auto bl = drawing::worldToScreen(bottomleft);
-	auto tr = drawing::worldToScreen(topright);
-	if (bl.has_value() && tr.has_value()) {
-		drawing::drawBox({ bl->x, bl->y }, { tr->x, tr->y }, borderwidth, color);
-	}
 }
 
 void drawing::drawCircle(const vec2<float> center, float radius, float linewidth, const color& color)
