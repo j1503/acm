@@ -29,6 +29,8 @@ namespace hooks
 		//hooks::trampoline swapbuffers;
 		hooks::trampoline pollevents;
 		hooks::iat sdlswapbuffers;
+	private:
+		bool installed = false;
 	};
 }
 // global

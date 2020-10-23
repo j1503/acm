@@ -41,16 +41,6 @@ static LRESULT __stdcall wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	case WM_QUIT:
 		globals::HookManager->uninstall(); // cleanup, even on program termination
 		break;
-	//case WM_KEYDOWN:
-	//case WM_SYSKEYDOWN:
-	//	if (wParam == globals::ActiveProfile->general.ejectKey) {
-	//		globals::HookManager->uninstall();
-	//		return 0l;
-	//	}
-	//	else if (wParam == globals::ActiveProfile->general.menuKey) {
-	//		globals::GUIManager->toggle();
-	//	}
-	//	break;
 	}
 
 	return CallWindowProc(globals::HookManager->originalWndProc, hWnd, msg, wParam, lParam);
@@ -75,14 +65,22 @@ void hooks::hookManager::install()
 	this->sdlswapbuffers.hook("SDL.dll", "SDL_GL_SwapBuffers", hookedfunctions::hkSDL_GL_SwapBuffers);
 	//this->swapbuffers.hook();
 	this->pollevents.hook();
+
+	this->installed = true;
 }
 
 void hooks::hookManager::uninstall()
 {
 	// restore hooks
-	//this->swapbuffers.restore();
-	this->pollevents.restore();
-	this->sdlswapbuffers.restore("SDL.dll", "SDL_GL_SwapBuffers");
+	// prevent errors if hooks haven't been initalized yet
+	// e.g. if an error occurs during global object initialization and uninstall() is called. 
+	// might still crash if some global objects have no been initialized properly.
+	if(this->installed){
+		this->pollevents.restore();
+		this->sdlswapbuffers.restore("SDL.dll", "SDL_GL_SwapBuffers");
+
+		this->installed = false; // not neccessary but w/e
+	}
 
 	// restore wndproc & unload
 	SetWindowLongPtr(this->hWnd, GWLP_WNDPROC, (LONG_PTR)this->originalWndProc);
@@ -91,6 +89,6 @@ void hooks::hookManager::uninstall()
 }
 
 static bool __stdcall unload(HMODULE hModule) {
-	Sleep(150); // 
+	Sleep(150); // safety
 	FreeLibraryAndExitThread(hModule, 0);
 }

@@ -15,7 +15,11 @@
 #include "drawing.hpp"
 
 /*
-TODO
+---------------- TODOS ----------------
+
+---------------
+#### DONE #####
+---------------
 - fix imgui input (done)
 - fix triggerbot/threads (done)
 - fix threads/remove threads and hook game logic function instead (DONE)
@@ -25,21 +29,30 @@ TODO
 - change cheats/gui interface to make interaction with imgui bettter (halfway done -> added ConstCheckbox to imgui)
 - add world2screen (done)
 - fix drawing (done)
-
-!!! - fix triggerbot -> use execute(command) instead of input! 
-
-- fix imgui weird text after resize (dont know how)
-- got teammates check
-- json use color struct instread of float arr
-- better solution for general settings -> correct language for winapi strings (english) (maybe)
-- find lookingAt function
 - fix aimbot FOV & SMOOTHING!!!
-- improve aimbot for specifc weapons: snipers, etc.. 
+
+----------------
+### NOT DONE ###
+----------------
+
+# IMPORTANT:
+- fix that weird esp bug
+- fix triggerbot -> use execute(command) instead of input!
+- got teammates check
+
+# NOT IMPORTANT (FOR NOW):
+- fix triggerbox & aimbot interaction
+- fix imgui weird text after resize (dont know how)
+- find lookingAt function
+- improve aimbot for specifc weapons: snipers, etc..
 - add locked target indicator (string/box)
 - improve aimbot to snap when circle is not just in range of origin point, but generally over the enemy
+
+# IDEAS:
 - add fun functions with supersecret settings/features
-- fix triggerbox & aimbot interaction 
-- add aimbot range (how close enemy must be) 
+- json use color struct instread of float arr
+- better solution for general settings -> correct language for winapi strings (english) (maybe)
+
 */
 //
 
@@ -58,14 +71,15 @@ void hookedfunctions::hkSDL_GL_SwapBuffers()
 	drawing::drawString(colors::white, "Press [INSERT] to open the menu", int(*globals::MemoryManager->screenWidth * 0.45f),
 		int(*globals::MemoryManager->screenHeight * 0.025f), fontscale);
 
-	// draw gui
-	globals::GUIManager->render();
-	
 	// order is important (fix?)
-	globals::CheatManager->tracelines();
+	globals::CheatManager->snaplines();
 	globals::CheatManager->barrelesp();
 	globals::CheatManager->aimbot();
 	globals::CheatManager->triggerbot();
+	globals::CheatManager->esp();
+
+	// draw gui last
+	globals::GUIManager->render();
 
 	// handle special input (menu open/eject)
 	if (globals::InputManager->getAsyncKeyState(SDLKey(globals::ActiveProfile->general.ejectKey)))
