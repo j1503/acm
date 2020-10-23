@@ -5,9 +5,10 @@
 #include <memory>
 #include "cheatbase.hpp"
 #include "triggerbot.hpp"
-#include "tracelines.hpp"
+#include "snaplines.hpp"
 #include "aimbot.hpp"
 #include "barrelesp.hpp"
+#include "esp.hpp"
 
 namespace cheats {
 	class cheatManager {
@@ -16,9 +17,10 @@ namespace cheats {
 		~cheatManager() = default;
 	public:
 		cheats::triggerbot triggerbot;
-		cheats::tracelines tracelines;
+		cheats::snaplines snaplines;
 		cheats::barrelesp barrelesp;
 		cheats::aimbot aimbot;
+		cheats::esp esp;
 	};
 }
 

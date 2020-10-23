@@ -29,37 +29,43 @@ public:
 		struct base_conf {
 			bool active = false;
 		};
-		struct menu_conf : public base_conf {
+		struct menu_conf final : public base_conf {
 			size_t menuKey = SDLK_INSERT;
 			size_t ejectKey = SDLK_END;
 		} general;
-		struct misc_conf {
+		struct misc_conf final {
 			bool supersecret = false;
 		} misc;
-		struct esp_conf : public base_conf {
+		struct esp_conf final : public base_conf {
+			bool teammates = false;
+			bool healthbar = false;
 			float enemyColor[3] = { 1.f, 0.f, 0.f };
 			float allyColor[3] = { 0.48f, 0.98f, 0.f };
 		} esp;
-		struct aimbot_conf : public base_conf {
+		struct aimbot_conf final : public base_conf {
 			bool friendlyfire = false;
 			bool showcircle = false;
 			float circlecolor[3] = { 1.f, 1.f, 1.f };
 			bool autoshoot = false;
 			bool targetLock = false;
 			bool smoothing = false;
+			bool range = false;
+			bool onkey = false;
+			size_t hotkey = SDLK_LSHIFT;
+			float rangevalue = 10.f;
 			float smoothvalue = 10.f;
 			float fov = 10.f;
 		} aimbot;
-		struct triggerbot_conf : public base_conf {
+		struct triggerbot_conf final : public base_conf {
 			bool friendlyfire = false;
 		} triggerbot;
-		struct tracelines_conf : public base_conf {
+		struct snaplines_conf final : public base_conf {
 			float enemyColor[3] = { 1.f, 0.f, 0.f };
 			float allyColor[3] = { 0.48f, 0.98f, 0.f };
 			float linewidth = 1.f;
 			bool teammates = false;
-		} tracelines;
-		struct barrelesp_conf : public base_conf {
+		} snaplines;
+		struct barrelesp_conf final : public base_conf {
 			float enemyColor[3] = { 1.f, 0.f, 0.f };
 			float allyColor[3] = { 0.48f, 0.98f, 0.f };
 			float linewidth = 1.f;

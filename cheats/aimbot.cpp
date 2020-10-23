@@ -53,10 +53,18 @@ void cheats::aimbot::run() noexcept
         if (globals::InputManager->leftMouseDown ) {
             lp->attacking = true;
         }
-        
-        auto fov = aimbot::viewAngleDist({ 1.f, lp->yaw, lp->pitch }, lp->origin, best->origin, false);
+
+        if (curropt->range && (dist > curropt->rangevalue))
+            return;
+
+        if (curropt->onkey && !globals::InputManager->getKeyState(SDLKey(curropt->hotkey)))
+            return;
+
+        vec aimat = best->origin;
+        aimat.z -= best->aboveeye;
+        auto fov = aimbot::viewAngleDist({ 1.f, lp->yaw, lp->pitch }, lp->origin, aimat, false);
         if ((fabs(fov.first) <= curropt->fov) && (fabs(fov.second) <= curropt->fov)) {
-            if(auto angle = aimbot::getAngles(lp->origin, best->origin); curropt->smoothing) { 
+            if(auto angle = aimbot::getAngles(lp->origin, aimat); curropt->smoothing) {
                 float newyaw = lp->yaw + (fov.first / curropt->smoothvalue);
                 if (newyaw < 0.f) newyaw += 360.f;
                 else if (newyaw > 359.99f) newyaw -= 360.f;
@@ -101,8 +109,10 @@ playerent* cheats::aimbot::findGoodTarget() noexcept
         playerent* curr = (*globals::MemoryManager->entityList)[i];
 
         if (this->isGoodTarget(curr)) {
-            auto fov = aimbot::viewAngleDist({ 1.f, lp->yaw, lp->pitch }, lp->origin, curr->origin);
-            float dist = lp->origin.dist(curr->origin);
+            vec aimat = curr->origin;
+            aimat.z -= curr->aboveeye; // not mistake, want to aim a bit lower
+            auto fov = aimbot::viewAngleDist({ 1.f, lp->yaw, lp->pitch }, lp->origin, aimat);
+            float dist = lp->origin.dist(aimat);
             // calc coefficient
             float currcoef = dist * 0.1f + fov.first * 0.45f + fov.second * 0.45f;
             float coef = bestdist * 0.1f + bestfov.first * 0.45f + bestfov.second * 0.45f;
@@ -125,7 +135,8 @@ bool cheats::aimbot::isGoodTarget(playerent* ent) noexcept
     if (ent->health <= 0) return false;
     if ((ent->team == lp->team) && !this->options()->friendlyfire) return false;
     if (!globals::MemoryManager->callIsVisible(lp->origin, ent->origin)) return false;
-    if (!drawing::worldToScreen(ent->origin)->z) return false;
+    vec dummy;
+    if (!drawing::worldToScreen(ent->origin, dummy)) return false;
     return true;
 }
 

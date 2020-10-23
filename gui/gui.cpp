@@ -11,7 +11,7 @@
 
 
 drawing::gui::gui(HWND hWnd)
-	: hWnd(hWnd), page(0u), tabs{ "Triggerbot","Aimbot","Tracelines","Barrelesp","Misc" }
+	: hWnd(hWnd), page(0u), tabs{ "Triggerbot","Aimbot","Snaplines","Barrelesp","ESP","Misc" }
 {
 	assert(globals::ConfigManager);
 	assert(globals::ActiveProfile);
@@ -61,10 +61,11 @@ void drawing::gui::render() noexcept
 			case 0:
 				ImGui::PushID(&cm.triggerbot);//uuid for scope labels
 				{
-					if (ImGui::ConstCheckbox(cm.triggerbot.name(), &cm.triggerbot.options()->active)) {
+					auto curropt = cm.triggerbot.options();
+					if (ImGui::ConstCheckbox(cm.triggerbot.name(), &curropt->active)) {
 						cm.triggerbot.toggle();
 					}
-					ImGui::Checkbox("Friendly Fire", &cm.triggerbot.options()->friendlyfire);
+					ImGui::Checkbox("Friendly Fire", &curropt->friendlyfire);
 				} 
 				ImGui::PopID();
 				break;
@@ -75,11 +76,33 @@ void drawing::gui::render() noexcept
 					if (ImGui::ConstCheckbox(cm.aimbot.name(), &curropt->active)) {
 						cm.aimbot.toggle();
 					}
-					ImGui::Checkbox("Show Circle", &curropt->showcircle);
+					ImGui::Checkbox("Show FOV", &curropt->showcircle);
 					if (curropt->showcircle)
-						ImGui::ColorEdit3("Circle Color", curropt->circlecolor);
+						ImGui::ColorEdit3("FOV Circle Color", curropt->circlecolor);
 					ImGui::Checkbox("Friendly Fire", &curropt->friendlyfire);
+					ImGui::Checkbox("On Hotkey", &curropt->onkey);
+					if (curropt->onkey){
+						static const char* items[] = { "Shift", "LControl", "Alt" };
+						static int current = (curropt->hotkey== SDLK_LSHIFT) ? 0  // ?maaaybee find a better way  
+							: (curropt->hotkey == SDLK_LCTRL) ? 1 : (curropt->hotkey == SDLK_LALT) ? 2 : 0; 
+						ImGui::Combo("Hotkey", &current, items, IM_ARRAYSIZE(items));
+						switch (current) {
+						case 0:
+							curropt->hotkey = SDLK_LSHIFT;
+							break;
+						case 1:
+							curropt->hotkey = SDLK_LCTRL;
+							break;
+						case 2:
+							curropt->hotkey = SDLK_LALT;
+							break;
+						}
+					}
 					ImGui::Checkbox("Autofire", &curropt->autoshoot);
+					ImGui::Checkbox("Range", &curropt->range);
+					if (curropt->range) {
+						ImGui::DragFloat("", &curropt->rangevalue, 0.5f, 0.f, 150.f, "%.2f", ImGuiSliderFlags_::ImGuiSliderFlags_ClampOnInput);
+					}
 					ImGui::Checkbox("Lock Target", &curropt->targetLock);
 					ImGui::Checkbox("Smoothing", &curropt->smoothing);
 					if (curropt->smoothing) {
@@ -91,40 +114,56 @@ void drawing::gui::render() noexcept
 				ImGui::PopID();
 				break;
 			case 2:
-				ImGui::PushID(&cm.tracelines);
+				ImGui::PushID(&cm.snaplines);
 				{
-					if (ImGui::ConstCheckbox(cm.tracelines.name(), &cm.tracelines.options()->active)) {
-						cm.tracelines.toggle();
+					auto curropt = cm.snaplines.options();
+					if (ImGui::ConstCheckbox(cm.snaplines.name(), &curropt->active)) {
+						cm.snaplines.toggle();
 					}
-					ImGui::Checkbox("Teammates", &cm.tracelines.options()->teammates);
-					ImGui::SliderFloat("Line Width", &cm.tracelines.options()->linewidth,
-						cm.tracelines.minlinewidth, cm.tracelines.maxlinewidth);
-					ImGui::ColorEdit3("Teammate Color", cm.tracelines.options()->allyColor);
-					ImGui::ColorEdit3("Enemy Color", cm.tracelines.options()->enemyColor);
+					ImGui::Checkbox("Teammates", &curropt->teammates);
+					ImGui::SliderFloat("Line Width", &curropt->linewidth,
+						cm.snaplines.minlinewidth, cm.snaplines.maxlinewidth);
+					ImGui::ColorEdit3("Teammate Color", curropt->allyColor);
+					ImGui::ColorEdit3("Enemy Color", curropt->enemyColor);
 				}
 				ImGui::PopID();
 				break;
 			case 3:
 				ImGui::PushID(&cm.barrelesp);
 				{
-					if (ImGui::ConstCheckbox(cm.barrelesp.name(), &cm.barrelesp.options()->active)) {
+					auto curropt = cm.barrelesp.options();
+					if (ImGui::ConstCheckbox(cm.barrelesp.name(), &curropt->active)) {
 						cm.barrelesp.toggle();
 					}
-					ImGui::Checkbox("Teammates", &cm.barrelesp.options()->teammates);
-					ImGui::SliderFloat("Line Length", &cm.barrelesp.options()->linelength,
+					ImGui::Checkbox("Teammates", &curropt->teammates);
+					ImGui::SliderFloat("Line Length", &curropt->linelength,
 						cm.barrelesp.minlinelength, cm.barrelesp.maxlinelength);
-					ImGui::SliderFloat("Line Width", &cm.barrelesp.options()->linewidth,
+					ImGui::SliderFloat("Line Width", &curropt->linewidth,
 						cm.barrelesp.minlinewidth, cm.barrelesp.maxlinewidth);
-					ImGui::ColorEdit3("Teammate Color", cm.barrelesp.options()->allyColor);
-					ImGui::ColorEdit3("Enemy Color", cm.barrelesp.options()->enemyColor);
+					ImGui::ColorEdit3("Teammate Color", curropt->allyColor);
+					ImGui::ColorEdit3("Enemy Color", curropt->enemyColor);
 
 				}
 				ImGui::PopID();
 				break;
 			case 4:
+				ImGui::PushID(&cm.esp);
+				{
+					auto curropt = cm.esp.options();
+					if (ImGui::ConstCheckbox(cm.esp.name(), &curropt->active)) {
+						cm.esp.toggle();
+					}
+					ImGui::Checkbox("Teammates", &curropt->teammates);
+					ImGui::Checkbox("Healthbar", &curropt->healthbar);
+					ImGui::ColorEdit3("Teammate Color", curropt->allyColor);
+					ImGui::ColorEdit3("Enemy Color", curropt->enemyColor);
+				}
+				ImGui::PopID();
+			case 5:
 				ImGui::PushID(&globals::ActiveProfile->misc);
 				{
-					ImGui::Checkbox("Super-Secret Features", &globals::ActiveProfile->misc.supersecret);
+					auto curropt = &globals::ActiveProfile->misc;
+					ImGui::Checkbox("Super-Secret Features", &curropt->supersecret);
 				}
 				ImGui::PopID();
 				break;

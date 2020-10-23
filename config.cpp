@@ -28,10 +28,11 @@ Add a new cheat:
 // custom to_json functions
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::menu_conf, active, menuKey, ejectKey);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::misc_conf, supersecret);
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::esp_conf, active, enemyColor, allyColor);
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::aimbot_conf, active, friendlyfire, showcircle, circlecolor, autoshoot, targetLock, smoothing, smoothvalue, fov);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::esp_conf, active, teammates, healthbar, enemyColor, allyColor);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::aimbot_conf, active, friendlyfire, showcircle, circlecolor, autoshoot, targetLock, smoothing,
+	range, onkey, hotkey, rangevalue, smoothvalue, fov);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::triggerbot_conf, active, friendlyfire);
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::tracelines_conf, active, enemyColor, allyColor, linewidth, teammates);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::snaplines_conf, active, enemyColor, allyColor, linewidth, teammates);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::barrelesp_conf, active, enemyColor, allyColor, linewidth, linelength, teammates);
 
 // options
@@ -50,7 +51,7 @@ void configManager::config::load(json& j)
 	this->esp = j["esp"];
 	this->aimbot = j["aimbot"];
 	this->triggerbot = j["triggerbot"];
-	this->tracelines = j["tracelines"];
+	this->snaplines = j["snaplines"];
 	this->barrelesp = j["barrelesp"];
 }
 
@@ -66,7 +67,7 @@ void configManager::config::reset() noexcept
 	this->esp = esp_conf{};
 	this->aimbot = aimbot_conf{};
 	this->triggerbot = triggerbot_conf{};
-	this->tracelines = tracelines_conf{};
+	this->snaplines = snaplines_conf{};
 	this->barrelesp = barrelesp_conf{};
 }
 
@@ -79,7 +80,7 @@ std::string configManager::config::toString() const noexcept
 	j["esp"] = this->esp;
 	j["aimbot"] = this->aimbot;
 	j["triggerbot"] = this->triggerbot;
-	j["tracelines"] = this->tracelines;
+	j["snaplines"] = this->snaplines;
 	j["barrelesp"] = this->barrelesp;
 	return j.dump(4, ' ', true);
 }
