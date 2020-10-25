@@ -122,6 +122,12 @@
     <ClInclude Include="cheats\snaplines.hpp">
       <Filter>cheats</Filter>
     </ClInclude>
+    <ClInclude Include="sdk\game.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\guns.hpp">
+      <Filter>cheats</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -206,6 +212,9 @@
       <Filter>cheats</Filter>
     </ClCompile>
     <ClCompile Include="cheats\snaplines.cpp">
+      <Filter>cheats</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\guns.cpp">
       <Filter>cheats</Filter>
     </ClCompile>
   </ItemGroup>

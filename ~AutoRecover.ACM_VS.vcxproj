@@ -164,7 +164,8 @@
     <ClInclude Include="cheats\cheatbase.hpp" />
     <ClInclude Include="cheats\cheatmanager.hpp" />
     <ClInclude Include="cheats\esp.hpp" />
-    <ClInclude Include="cheats\tracelines.hpp" />
+    <ClInclude Include="cheats\guns.hpp" />
+    <ClInclude Include="cheats\snaplines.hpp" />
     <ClInclude Include="cheats\triggerbot.hpp" />
     <ClInclude Include="config.hpp" />
     <ClInclude Include="debugconsole.hpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="json.hpp" />
     <ClInclude Include="memory.hpp" />
     <ClInclude Include="sdk\entity.hpp" />
+    <ClInclude Include="sdk\game.hpp" />
     <ClInclude Include="sdk\geom.hpp" />
     <ClInclude Include="sdk\weapon.hpp" />
   </ItemGroup>
@@ -198,7 +200,8 @@
     <ClCompile Include="cheats\cheatbase.cpp" />
     <ClCompile Include="cheats\cheatmanager.cpp" />
     <ClCompile Include="cheats\esp.cpp" />
-    <ClCompile Include="cheats\tracelines.cpp" />
+    <ClCompile Include="cheats\guns.cpp" />
+    <ClCompile Include="cheats\snaplines.cpp" />
     <ClCompile Include="cheats\triggerbot.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="debugconsole.cpp" />
