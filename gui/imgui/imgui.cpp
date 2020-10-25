@@ -2305,20 +2305,20 @@ ImU32 ImGui::GetColorU32(ImU32 col)
 void ImGui::PushStyleColor(ImGuiCol idx, ImU32 col)
 {
     ImGuiContext& g = *GImGui;
-    ImGuiColorMod backup;
-    backup.Col = idx;
-    backup.BackupValue = g.Style.Colors[idx];
-    g.ColorModifiers.push_back(backup);
+    ImGuiColorMod defaults;
+    defaults.Col = idx;
+    defaults.BackupValue = g.Style.Colors[idx];
+    g.ColorModifiers.push_back(defaults);
     g.Style.Colors[idx] = ColorConvertU32ToFloat4(col);
 }
 
 void ImGui::PushStyleColor(ImGuiCol idx, const ImVec4& col)
 {
     ImGuiContext& g = *GImGui;
-    ImGuiColorMod backup;
-    backup.Col = idx;
-    backup.BackupValue = g.Style.Colors[idx];
-    g.ColorModifiers.push_back(backup);
+    ImGuiColorMod defaults;
+    defaults.Col = idx;
+    defaults.BackupValue = g.Style.Colors[idx];
+    g.ColorModifiers.push_back(defaults);
     g.Style.Colors[idx] = col;
 }
 
@@ -2327,8 +2327,8 @@ void ImGui::PopStyleColor(int count)
     ImGuiContext& g = *GImGui;
     while (count > 0)
     {
-        ImGuiColorMod& backup = g.ColorModifiers.back();
-        g.Style.Colors[backup.Col] = backup.BackupValue;
+        ImGuiColorMod& defaults = g.ColorModifiers.back();
+        g.Style.Colors[defaults.Col] = defaults.BackupValue;
         g.ColorModifiers.pop_back();
         count--;
     }
@@ -2410,11 +2410,11 @@ void ImGui::PopStyleVar(int count)
     while (count > 0)
     {
         // We avoid a generic memcpy(data, &backup.Backup.., GDataTypeSize[info->Type] * info->Count), the overhead in Debug is not worth it.
-        ImGuiStyleMod& backup = g.StyleModifiers.back();
-        const ImGuiStyleVarInfo* info = GetStyleVarInfo(backup.VarIdx);
+        ImGuiStyleMod& defaults = g.StyleModifiers.back();
+        const ImGuiStyleVarInfo* info = GetStyleVarInfo(defaults.VarIdx);
         void* data = info->GetVarPtr(&g.Style);
-        if (info->Type == ImGuiDataType_Float && info->Count == 1)      { ((float*)data)[0] = backup.BackupFloat[0]; }
-        else if (info->Type == ImGuiDataType_Float && info->Count == 2) { ((float*)data)[0] = backup.BackupFloat[0]; ((float*)data)[1] = backup.BackupFloat[1]; }
+        if (info->Type == ImGuiDataType_Float && info->Count == 1)      { ((float*)data)[0] = defaults.BackupFloat[0]; }
+        else if (info->Type == ImGuiDataType_Float && info->Count == 2) { ((float*)data)[0] = defaults.BackupFloat[0]; ((float*)data)[1] = defaults.BackupFloat[1]; }
         g.StyleModifiers.pop_back();
         count--;
     }
