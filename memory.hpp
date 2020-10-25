@@ -10,6 +10,7 @@
 #include <Psapi.h>
 #include "sdk/geom.hpp"
 #include "sdk/entity.hpp"
+#include "sdk/game.hpp"
 
 namespace memory
 {
@@ -106,6 +107,7 @@ namespace memory
 		memoryManager();
 		~memoryManager() = default;
 		// pointers
+		int32_t* gamemode;
 		playerent* localPlayer;
 		playerent*** entityList;
 		size_t* entityCount;

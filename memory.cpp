@@ -59,6 +59,7 @@ bool memory::pfind::patternSearchMemcmp(const unsigned char* word, const unsigne
 memory::memoryManager::memoryManager()
 	: ac_client("ac_client.exe")
 {
+	this->gamemode = *this->ac_client.find<int32_t**, 2>("\x89\x0D????\x83\xFE\xFF\x75\x04\xB0\x01\xEB\x16");
 	this->localPlayer = **this->ac_client.find<playerent***, 2>("\x8B\x35????\x83\xC4\x04\xE8????\x8B\xCD");
 	this->entityList = *this->ac_client.find<playerent****, 2>("\x8B\x0D????\x8B\x34\x91\x85\xF6\x0F\x84????");
 	this->entityCount = *this->ac_client.find<size_t**, 2>("\x39\x15????\x89\x54\x24\x14");
@@ -76,6 +77,7 @@ memory::memoryManager::memoryManager()
 
 	// FIX!
 	this->executeRet = this->ac_client.getFunctionPointerByRelativeCall<int(__cdecl*)(const char*)>("\xE8????\x83\xC4\x04\x85\xC0\x74\x04\x89\x44\x24\x54");
+	
 	this->rayIntersectEnt = this->ac_client.getFunctionPointerByRelativeCall<void*>("\xE8????\x83\xC4\x14\x89\x03");
 	this->isVisible = this->ac_client.getFunctionPointerByRelativeCall<void*>("\xE8????\x83\xC4\x18\x84\xC0\x74\x0C\xB8????");
 	this->hudDrawString = this->ac_client.getFunctionPointerByRelativeCall<void*, 5>("\xB8????\xE8????\x83\xC4\x1C\x55\x8D\x54\x24\x3C");
