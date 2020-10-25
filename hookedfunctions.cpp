@@ -37,8 +37,6 @@
 
 # IMPORTANT:
 - fix that weird esp bug
-- fix triggerbot -> use execute(command) instead of input!
-- got teammates check
 
 # NOT IMPORTANT (FOR NOW):
 - fix triggerbox & aimbot interaction
@@ -47,12 +45,16 @@
 - improve aimbot for specifc weapons: snipers, etc..
 - add locked target indicator (string/box)
 - improve aimbot to snap when circle is not just in range of origin point, but generally over the enemy
+- config catch different exceptions instead of one and handle them correctly
+- triggerbot -> use execute(command) instead of input!
+- handle case when not alive/spectating
 
 # IDEAS:
 - add fun functions with supersecret settings/features
 - json use color struct instread of float arr
 - better solution for general settings -> correct language for winapi strings (english) (maybe)
-
+- esp show if bot 
+- esp show name
 */
 //
 
@@ -67,9 +69,6 @@ int hookedfunctions::hkSDL_PollEvent(SDL_Event* event)
 
 void hookedfunctions::hkSDL_GL_SwapBuffers()
 {
-	float fontscale = *globals::MemoryManager->screenWidth * 0.0003f;
-	drawing::drawString(colors::white, "Press [INSERT] to open the menu", int(*globals::MemoryManager->screenWidth * 0.45f),
-		int(*globals::MemoryManager->screenHeight * 0.025f), fontscale);
 
 	// order is important (fix?)
 	globals::CheatManager->snaplines();
@@ -77,6 +76,7 @@ void hookedfunctions::hkSDL_GL_SwapBuffers()
 	globals::CheatManager->aimbot();
 	globals::CheatManager->triggerbot();
 	globals::CheatManager->esp();
+	globals::CheatManager->guns();
 
 	// draw gui last
 	globals::GUIManager->render();
