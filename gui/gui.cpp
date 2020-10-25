@@ -11,7 +11,7 @@
 
 
 drawing::gui::gui(HWND hWnd)
-	: hWnd(hWnd), page(0u), tabs{ "Triggerbot","Aimbot","Snaplines","Barrelesp","ESP","Misc" }
+	: hWnd(hWnd), page(0u), tabs{ "Triggerbot","Aimbot","Snaplines","Barrelesp","ESP","Guns","Misc" }
 {
 	assert(globals::ConfigManager);
 	assert(globals::ActiveProfile);
@@ -159,7 +159,22 @@ void drawing::gui::render() noexcept
 					ImGui::ColorEdit3("Enemy Color", curropt->enemyColor);
 				}
 				ImGui::PopID();
+				break;
 			case 5:
+				ImGui::PushID(&cm.guns);
+				{
+					auto curropt = cm.guns.options();
+					ImGui::Checkbox("No Reload", &curropt->reload);
+					ImGui::Checkbox("Rapidfire", &curropt->rapidfire);
+					ImGui::Checkbox("Nospread", &curropt->nospread);
+					ImGui::Checkbox("Infinite Ammo", &curropt->infammo);
+					ImGui::Checkbox("No Recoil", &curropt->recoil);
+					ImGui::Checkbox("No Kickback", &curropt->kickback);
+					ImGui::Checkbox("Force Fullauto", &curropt->fullauto);
+				}
+				ImGui::PopID();
+				break;
+			case 6:
 				ImGui::PushID(&globals::ActiveProfile->misc);
 				{
 					auto curropt = &globals::ActiveProfile->misc;

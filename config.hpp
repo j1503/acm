@@ -36,6 +36,15 @@ public:
 		struct misc_conf final {
 			bool supersecret = false;
 		} misc;
+		struct guns_conf final : public base_conf {
+			bool reload = false;
+			bool rapidfire = false;
+			bool nospread = false;
+			bool infammo = false;
+			bool recoil = false;
+			bool kickback = false;
+			bool fullauto = false;
+		} guns;
 		struct esp_conf final : public base_conf {
 			bool teammates = false;
 			bool healthbar = false;

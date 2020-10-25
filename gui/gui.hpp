@@ -27,7 +27,7 @@ namespace drawing {
 	private:
 		void initStyle() const noexcept;
 	private:
-		static constexpr size_t tabcount = 6u;
+		static constexpr size_t tabcount = 7u;
 		config** profile;
 		const HWND hWnd;
 		size_t page;

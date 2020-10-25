@@ -9,6 +9,7 @@
 #include "aimbot.hpp"
 #include "barrelesp.hpp"
 #include "esp.hpp"
+#include "guns.hpp"
 
 namespace cheats {
 	class cheatManager {
@@ -21,6 +22,7 @@ namespace cheats {
 		cheats::barrelesp barrelesp;
 		cheats::aimbot aimbot;
 		cheats::esp esp;
+		cheats::guns guns;
 	};
 }
 

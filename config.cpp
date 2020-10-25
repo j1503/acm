@@ -28,6 +28,7 @@ Add a new cheat:
 // custom to_json functions
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::menu_conf, active, menuKey, ejectKey);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::misc_conf, supersecret);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::guns_conf, active, reload, rapidfire, nospread, infammo, recoil, kickback, fullauto); // ignore active but needs to be there for polymorphism to work
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::esp_conf, active, teammates, healthbar, enemyColor, allyColor);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(configManager::config::aimbot_conf, active, friendlyfire, showcircle, circlecolor, autoshoot, targetLock, smoothing,
 	range, onkey, hotkey, rangevalue, smoothvalue, fov);
@@ -48,6 +49,7 @@ void configManager::config::load(json& j)
 	this->name = j["name"];
 	//this->general = j["general"];
 	this->misc = j["misc"];
+	this->guns = j["guns"];
 	this->esp = j["esp"];
 	this->aimbot = j["aimbot"];
 	this->triggerbot = j["triggerbot"];
@@ -64,6 +66,7 @@ void configManager::config::reset() noexcept
 {
 	this->general = menu_conf{};
 	this->misc = misc_conf{};
+	this->guns = guns_conf{};
 	this->esp = esp_conf{};
 	this->aimbot = aimbot_conf{};
 	this->triggerbot = triggerbot_conf{};
@@ -77,6 +80,7 @@ std::string configManager::config::toString() const noexcept
 	j["name"] = this->name;
 	//j["general"] = this->general;
 	j["misc"] = this->misc;
+	j["guns"] = this->guns;
 	j["esp"] = this->esp;
 	j["aimbot"] = this->aimbot;
 	j["triggerbot"] = this->triggerbot;
