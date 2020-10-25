@@ -82,9 +82,9 @@ void hookedfunctions::hkSDL_GL_SwapBuffers()
 	globals::GUIManager->render();
 
 	// handle special input (menu open/eject)
-	if (globals::InputManager->getAsyncKeyState(SDLKey(globals::ActiveProfile->general.ejectKey)))
+	if (globals::InputManager->getAsyncKeyState(SDLKey(globals::ConfigManager->active().general.ejectKey)))
 		globals::HookManager->uninstall();
-	if (globals::InputManager->getAsyncKeyState(SDLKey(globals::ActiveProfile->general.menuKey)))
+	if (globals::InputManager->getAsyncKeyState(SDLKey(globals::ConfigManager->active().general.menuKey)))
 		globals::GUIManager->toggle();
 
 	return globals::HookManager->sdlswapbuffers.getOriginalCdecl<void>("SDL.dll", "SDL_GL_SwapBuffers")();

@@ -13,7 +13,7 @@ namespace cheats {
 		void run() noexcept override;
 		void on() noexcept override;
 		void off() noexcept override;
-		config::barrelesp_conf* options() noexcept override;
+		config::barrelesp_conf& options() noexcept override;
 	public:
 		static constexpr float minlinelength = 1.f;
 		static constexpr float maxlinelength = 20.f;

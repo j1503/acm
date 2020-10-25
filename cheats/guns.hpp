@@ -14,7 +14,7 @@ namespace cheats {
 		void run() noexcept;
 		void on() noexcept;
 		void off() noexcept;
-		config::guns_conf* options() noexcept;
+		config::guns_conf& options() noexcept;
 	private:
 		guninfo defaults[NUMGUNS];
 	};

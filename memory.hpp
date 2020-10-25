@@ -102,10 +102,10 @@ namespace memory
 	private:
 		MODULEINFO moduleInfo;
 	};
-	class memoryManager {
+	class memory_manager {
 	public:
-		memoryManager();
-		~memoryManager() = default;
+		memory_manager();
+		~memory_manager() = default;
 		// pointers
 		int32_t* gamemode;
 		playerent* localPlayer;
@@ -138,6 +138,6 @@ namespace memory
 }
 
 namespace globals {
-	inline std::unique_ptr<memory::memoryManager> MemoryManager;
+	inline std::unique_ptr<memory::memory_manager> MemoryManager;
 }
 #endif

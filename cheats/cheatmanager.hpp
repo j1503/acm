@@ -12,10 +12,10 @@
 #include "guns.hpp"
 
 namespace cheats {
-	class cheatManager {
+	class cheat_manager {
 	public:
-		cheatManager();
-		~cheatManager() = default;
+		cheat_manager();
+		~cheat_manager() = default;
 	public:
 		cheats::triggerbot triggerbot;
 		cheats::snaplines snaplines;
@@ -27,7 +27,7 @@ namespace cheats {
 }
 
 namespace globals {
-	inline std::unique_ptr<cheats::cheatManager> CheatManager;
+	inline std::unique_ptr<cheats::cheat_manager> CheatManager;
 }
 
 #endif

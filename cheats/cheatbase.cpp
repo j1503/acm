@@ -6,7 +6,6 @@ cheats::cheat::cheat()
 	assert(globals::ConfigManager != nullptr);
 	assert(globals::InputManager != nullptr);
 	assert(globals::MemoryManager != nullptr);
-	this->profile = &globals::ActiveProfile;
 }
 
 cheats::cheat::~cheat()
@@ -16,7 +15,7 @@ cheats::cheat::~cheat()
 
 void cheats::cheat::toggle() noexcept
 {
-	if (this->options()->active) {
+	if (this->options().active) {
 		return this->off();
 	}
 	this->on();

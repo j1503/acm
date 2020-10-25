@@ -18,7 +18,8 @@ const char* cheats::barrelesp::name() const noexcept
 
 void cheats::barrelesp::run() noexcept
 {
-	if (this->options()->active) {
+	auto curropt = this->options();
+	if (curropt.active) {
 		drawing::before2D();
 		playerent* lp = globals::MemoryManager->localPlayer;
 		for(size_t i = 1; i < *globals::MemoryManager->entityCount; ++i){
@@ -26,7 +27,7 @@ void cheats::barrelesp::run() noexcept
 			if (ent) {
 				if(ent->health > 0){
 					bool ally = m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team);
-					if (!this->options()->teammates && ally)
+					if (!curropt.teammates && ally)
 						continue;
 					vec ray(1.f, ent->yaw, ent->pitch);
 					vec head = ent->origin;
@@ -34,10 +35,10 @@ void cheats::barrelesp::run() noexcept
 					ray = angleVector(ray);
 					vec transform = ray;
 					transform.div(5);
-					ray.mul(this->options()->linelength);
+					ray.mul(curropt.linelength);
 					ray.add(head);
-					drawing::drawLineWorld(head.add(transform), ray, this->options()->linewidth,
-						ally ? colors::toColor(this->options()->allyColor) : colors::toColor(this->options()->enemyColor));
+					drawing::drawLineWorld(head.add(transform), ray, curropt.linewidth,
+						ally ? colors::toColor(curropt.allyColor) : colors::toColor(curropt.enemyColor));
 				}
 			}
 		}
@@ -47,15 +48,15 @@ void cheats::barrelesp::run() noexcept
 
 void cheats::barrelesp::on() noexcept
 {
-	this->options()->active = true;
+	this->options().active = true;
 }
 
 void cheats::barrelesp::off() noexcept
 {
-	this->options()->active = false;
+	this->options().active = false;
 }
 
-configManager::config::barrelesp_conf* cheats::barrelesp::options() noexcept
+config_manager::config::barrelesp_conf& cheats::barrelesp::options() noexcept
 {
-	return &(*this->profile)->barrelesp;
+	return globals::ConfigManager->active().barrelesp;
 }

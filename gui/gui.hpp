@@ -13,7 +13,7 @@
 namespace drawing {
 	class gui {
 	public:
-		using config = configManager::config;
+		using config = config_manager::config;
 		gui() = default;
 		gui(HWND hWnd);
 		~gui();
@@ -23,12 +23,11 @@ namespace drawing {
 		void show() const noexcept;
 		void hide() const noexcept;
 		void toggle() const noexcept;
-		config::menu_conf* options() const noexcept;
+		config::menu_conf& options() const noexcept;
 	private:
 		void initStyle() const noexcept;
 	private:
 		static constexpr size_t tabcount = 7u;
-		config** profile;
 		const HWND hWnd;
 		size_t page;
 		const char * tabs[tabcount];

@@ -7,11 +7,13 @@
 namespace cheats {
 	class esp final : public cheats::cheat {
 	public:
+		esp();
+		~esp();
 		const char* name() const noexcept;
 		void run() noexcept;
 		void on() noexcept;
 		void off() noexcept;
-		config::esp_conf* options() noexcept;
+		config::esp_conf& options() noexcept;
 	};
 }
 

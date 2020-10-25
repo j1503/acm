@@ -13,7 +13,7 @@ namespace cheats {
 		void run() noexcept override;
 		void on() noexcept override;
 		void off() noexcept override;
-		config::triggerbot_conf* options() noexcept override;
+		config::triggerbot_conf& options() noexcept override;
 	};
 }
 

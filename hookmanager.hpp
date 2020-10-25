@@ -12,11 +12,11 @@
 
 namespace hooks
 {
-	class hookManager
+	class hook_manager
 	{
 	public:
-		hookManager() = default;
-		hookManager(HMODULE hModule);
+		hook_manager() = default;
+		hook_manager(HMODULE hModule);
 		void install();
 		void uninstall();
 		// original function ptrs
@@ -35,6 +35,6 @@ namespace hooks
 }
 // global
 namespace globals {
-	inline std::unique_ptr<hooks::hookManager> HookManager;
+	inline std::unique_ptr<hooks::hook_manager> HookManager;
 }
 #endif

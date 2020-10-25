@@ -56,7 +56,7 @@ bool memory::pfind::patternSearchMemcmp(const unsigned char* word, const unsigne
 	return true;
 }
 
-memory::memoryManager::memoryManager()
+memory::memory_manager::memory_manager()
 	: ac_client("ac_client.exe")
 {
 	this->gamemode = *this->ac_client.find<int32_t**, 2>("\x89\x0D????\x83\xFE\xFF\x75\x04\xB0\x01\xEB\x16");
@@ -83,7 +83,7 @@ memory::memoryManager::memoryManager()
 	this->hudDrawString = this->ac_client.getFunctionPointerByRelativeCall<void*, 5>("\xB8????\xE8????\x83\xC4\x1C\x55\x8D\x54\x24\x3C");
 }
 
-playerent* memory::memoryManager::callRayIntersectEnt(float* distance, vec* from, vec* to, playerent* ent, int* bone)
+playerent* memory::memory_manager::callRayIntersectEnt(float* distance, vec* from, vec* to, playerent* ent, int* bone)
 {
 	auto addr = this->rayIntersectEnt;
 	__asm { // custom calling convention
@@ -99,7 +99,7 @@ playerent* memory::memoryManager::callRayIntersectEnt(float* distance, vec* from
 	// returns eax
 }
 
-bool memory::memoryManager::callIsVisible(const vec from, const vec to)
+bool memory::memory_manager::callIsVisible(const vec from, const vec to)
 {
 	auto addr = this->isVisible;
 	__asm {
@@ -119,7 +119,7 @@ bool memory::memoryManager::callIsVisible(const vec from, const vec to)
 	}
 }
 
-void memory::memoryManager::callHudDrawString(unsigned char color[3], const char* text, int x, int y)
+void memory::memory_manager::callHudDrawString(unsigned char color[3], const char* text, int x, int y)
 {
 	unsigned char red = color[0];
 	unsigned char green = color[1];

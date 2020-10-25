@@ -18,12 +18,12 @@ const char* cheats::aimbot::name() const noexcept
 void cheats::aimbot::run() noexcept
 {
     auto curropt = this->options();
-    if (curropt->active) {
-        if(curropt->showcircle){
+    if (curropt.active) {
+        if(curropt.showcircle){
         drawing::before2D();
-            float cradius = (*globals::MemoryManager->screenWidth / 2.f) * tanf(curropt->fov * RAD);
+            float cradius = (*globals::MemoryManager->screenWidth / 2.f) * tanf(curropt.fov * RAD);
             drawing::drawCircle({ *globals::MemoryManager->screenWidth/2.f, *globals::MemoryManager->screenHeight/2.f },
-                cradius, 1.0f, colors::toColor(curropt->circlecolor));
+                cradius, 1.0f, colors::toColor(curropt.circlecolor));
             drawing::after2D();
         }
 
@@ -41,7 +41,7 @@ void cheats::aimbot::run() noexcept
         int bone;
         playerent* intersects = globals::MemoryManager->callRayIntersectEnt(&dist, &lp->origin, globals::MemoryManager->lookingAt, lp, &bone);
 
-        if (curropt->targetLock) {
+        if (curropt.targetLock) {
             if (!this->isGoodTarget(this->lockedOn) || !intersects) {
                 this->lockedOn = this->findGoodTarget();
             }
@@ -53,29 +53,29 @@ void cheats::aimbot::run() noexcept
         if (!best) return;
 
   
-        if (curropt->range && (dist > curropt->rangevalue))
+        if (curropt.range && (dist > curropt.rangevalue))
             return;
 
-        if (curropt->onkey && !globals::InputManager->getKeyState(SDLKey(curropt->hotkey)))
+        if (curropt.onkey && !globals::InputManager->getKeyState(SDLKey(curropt.hotkey)))
             return;
 
         vec aimat = best->origin;
         aimat.z -= best->aboveeye;
         auto fov = aimbot::viewAngleDist({ 1.f, lp->yaw, lp->pitch }, lp->origin, aimat, false);
-        if ((fabs(fov.first) <= curropt->fov) && (fabs(fov.second) <= curropt->fov)) {
-            if(auto angle = aimbot::getAngles(lp->origin, aimat); curropt->smoothing) {
-                float newyaw = lp->yaw + (fov.first / curropt->smoothvalue);
+        if ((fabs(fov.first) <= curropt.fov) && (fabs(fov.second) <= curropt.fov)) {
+            if(auto angle = aimbot::getAngles(lp->origin, aimat); curropt.smoothing) {
+                float newyaw = lp->yaw + (fov.first / curropt.smoothvalue);
                 if (newyaw < 0.f) newyaw += 360.f;
                 else if (newyaw > 359.99f) newyaw -= 360.f;
                 lp->yaw = newyaw;
-                lp->pitch = lp->pitch + (fov.second / curropt->smoothvalue); // pitch can't go out of bounds, range is not circular
+                lp->pitch = lp->pitch + (fov.second / curropt.smoothvalue); // pitch can't go out of bounds, range is not circular
             }
             else {
                 lp->yaw = angle.y;
                 lp->pitch = angle.z;
             }
 
-            if (curropt->autoshoot) {
+            if (curropt.autoshoot) {
                 lp->attacking = true;
             }
         }
@@ -84,7 +84,7 @@ void cheats::aimbot::run() noexcept
 
 void cheats::aimbot::on() noexcept
 {
-    this->options()->active = true;
+    this->options().active = true;
 }
 
 void cheats::aimbot::off() noexcept
@@ -93,12 +93,12 @@ void cheats::aimbot::off() noexcept
     if (!globals::InputManager->leftMouseDown) {
         lp->attacking = false;
     }
-    this->options()->active = false;
+    this->options().active = false;
 }
 
-configManager::config::aimbot_conf* cheats::aimbot::options() noexcept
+config_manager::config::aimbot_conf& cheats::aimbot::options() noexcept
 {
-    return &(*this->profile)->aimbot;
+    return globals::ConfigManager->active().aimbot;
 }
 
 playerent* cheats::aimbot::findGoodTarget() noexcept
@@ -136,7 +136,7 @@ bool cheats::aimbot::isGoodTarget(playerent* ent) noexcept
     if (ent == lp) return false;
     if (ent->state != CS_ALIVE) return false;
     if (ent->health <= 0) return false;
-    if (m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team) && !this->options()->friendlyfire) return false;
+    if (m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team) && !this->options().friendlyfire) return false;
     if (!globals::MemoryManager->callIsVisible(lp->origin, ent->origin)) return false;
     vec dummy;
     if (!drawing::worldToScreen(ent->origin, dummy)) return false;

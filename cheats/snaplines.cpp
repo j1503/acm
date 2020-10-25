@@ -5,12 +5,7 @@
 #include "../sdk/game.hpp"
 
 cheats::snaplines::snaplines()
-	: cheats::cheat()
-{
-	if (this->options()->active) {
-		this->on();
-	}
-}
+	: cheats::cheat() {}
 
 cheats::snaplines::~snaplines()
 {
@@ -24,7 +19,8 @@ const char * cheats::snaplines::name() const noexcept
 
 void cheats::snaplines::run() noexcept
 {
-	if (this->options()->active && globals::MemoryManager->entityList) {
+	auto curropt = this->options();
+	if (curropt.active && globals::MemoryManager->entityList) {
 		drawing::before2D();
 
 		playerent* lp = globals::MemoryManager->localPlayer;
@@ -35,14 +31,14 @@ void cheats::snaplines::run() noexcept
 			if (ent) {
 				if(ent->health > 0){
 					bool ally = m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team);
-					if(!this->options()->teammates && ally)
+					if(!curropt.teammates && ally)
 						continue;
 					vec pos = ent->origin;
 					pos.z -= ent->eyeheight;
 					vec poss;
 					if(drawing::worldToScreen(pos, poss)){
-						drawing::drawLine({ w/2.f, h }, { poss.x, poss.y }, this->options()->linewidth, 
-							ally ? colors::toColor(this->options()->allyColor) : colors::toColor(this->options()->enemyColor));
+						drawing::drawLine({ w/2.f, h }, { poss.x, poss.y }, curropt.linewidth,
+							ally ? colors::toColor(curropt.allyColor) : colors::toColor(curropt.enemyColor));
 					}
 				}
 			}
@@ -53,15 +49,15 @@ void cheats::snaplines::run() noexcept
 
 void cheats::snaplines::on() noexcept
 {
-	this->options()->active = true;
+	this->options().active = true;
 }
 
 void cheats::snaplines::off() noexcept
 {
-	this->options()->active = false;
+	this->options().active = false;
 }
 
-configManager::config::snaplines_conf* cheats::snaplines::options() noexcept
+config_manager::config::snaplines_conf& cheats::snaplines::options() noexcept
 {
-	return &(*this->profile)->snaplines;
+	return globals::ConfigManager->active().snaplines;
 }

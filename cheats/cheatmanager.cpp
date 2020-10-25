@@ -1,4 +1,4 @@
 #include "cheatmanager.hpp"
 
-cheats::cheatManager::cheatManager()
+cheats::cheat_manager::cheat_manager()
 	: triggerbot(), snaplines(), barrelesp(), aimbot(), esp(), guns() {}

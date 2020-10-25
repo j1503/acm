@@ -20,10 +20,10 @@ static LRESULT __stdcall wndProcThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 #ifdef _DEBUG
 	globals::DebugConsole = std::make_unique<debug::console>();
 #endif
-	globals::ConfigManager = std::make_unique<configManager>(hWnd);
-	globals::MemoryManager = std::make_unique<memory::memoryManager>();
+	globals::ConfigManager = std::make_unique<config_manager>();
+	globals::MemoryManager = std::make_unique<memory::memory_manager>();
 	globals::InputManager = std::make_unique<input>();
-	globals::CheatManager = std::make_unique<cheats::cheatManager>();
+	globals::CheatManager = std::make_unique<cheats::cheat_manager>();
 	globals::GUIManager = std::make_unique<drawing::gui>(hWnd);
 
 	globals::HookManager->install();
@@ -34,7 +34,7 @@ static LRESULT __stdcall wndProcThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 static LRESULT __stdcall wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	// imgui
-	if (globals::ActiveProfile->general.active && ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) {
+	if (globals::ConfigManager->active().general.active && ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) {
 		return 1l;
 	}
 	switch (msg) {
@@ -46,7 +46,7 @@ static LRESULT __stdcall wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	return CallWindowProc(globals::HookManager->originalWndProc, hWnd, msg, wParam, lParam);
 }
 
-hooks::hookManager::hookManager(HMODULE hModule)
+hooks::hook_manager::hook_manager(HMODULE hModule)
 	: hModule(hModule), sdlswapbuffers(), pollevents()
 {
 	this->hWnd = FindWindow(nullptr, "AssaultCube");
@@ -54,7 +54,7 @@ hooks::hookManager::hookManager(HMODULE hModule)
 	this->originalWndProc = WNDPROC(SetWindowLongPtr(this->hWnd, GWLP_WNDPROC, (LONG_PTR)wndProcThunk));
 }
 
-void hooks::hookManager::install()
+void hooks::hook_manager::install()
 {
 	// create hooks
 	//this->swapbuffers = hooks::trampoline("opengl32.dll", "wglSwapBuffers", hookedfunctions::hkwglSwapBuffers, 0x5);
@@ -69,7 +69,7 @@ void hooks::hookManager::install()
 	this->installed = true;
 }
 
-void hooks::hookManager::uninstall()
+void hooks::hook_manager::uninstall()
 {
 	// restore hooks
 	// prevent errors if hooks haven't been initalized yet

@@ -10,7 +10,7 @@
 namespace cheats {
 	class cheat {
 	public:
-		using config = configManager::config;
+		using config = config_manager::config;
 		cheat();
 		virtual ~cheat();
 		virtual const char * name() const noexcept = 0;
@@ -19,9 +19,7 @@ namespace cheats {
 		virtual void off() noexcept = 0;
 		void toggle() noexcept;
 		void operator()() noexcept;
-		virtual config::base_conf* options() noexcept = 0;
-	protected:
-		config** profile;
+		virtual config::base_conf& options() noexcept = 0;
 	};
 }
 

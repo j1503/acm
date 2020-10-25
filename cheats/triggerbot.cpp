@@ -22,7 +22,7 @@ const char * cheats::triggerbot::name() const noexcept
 void cheats::triggerbot::run() noexcept
 {
 	auto curropt = this->options();
-	if (curropt->active) {
+	if (curropt.active) {
 		if (globals::MemoryManager->localPlayer) {
 			playerent* lp = globals::MemoryManager->localPlayer;
 			
@@ -36,11 +36,11 @@ void cheats::triggerbot::run() noexcept
 				ray.mul(raylength);
 				ray.add(lp->origin); */
 			playerent* ent = globals::MemoryManager->callRayIntersectEnt(&distance, &lp->origin, globals::MemoryManager->lookingAt, lp, &bone);
-			bool ally = m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team);
 
 			if (ent) {
+				bool ally = m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team);
 
-				if (!curropt->friendlyfire && ally) return;
+				if (!curropt.friendlyfire && ally) return;
 
 				lp->attacking = true;
 			}
@@ -55,7 +55,7 @@ void cheats::triggerbot::run() noexcept
 
 void cheats::triggerbot::on() noexcept
 {
-	this->options()->active = true;
+	this->options().active = true;
 }
 
 void cheats::triggerbot::off() noexcept
@@ -64,10 +64,10 @@ void cheats::triggerbot::off() noexcept
 	if (!globals::InputManager->leftMouseDown) {
 		lp->attacking = false;
 	}
-	this->options()->active = false;
+	this->options().active = false;
 }
 
-configManager::config::triggerbot_conf* cheats::triggerbot::options() noexcept
+config_manager::config::triggerbot_conf& cheats::triggerbot::options() noexcept
 {
-	return &(*this->profile)->triggerbot;
+	return globals::ConfigManager->active().triggerbot;
 }

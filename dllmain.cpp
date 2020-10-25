@@ -4,7 +4,7 @@
 bool __stdcall DllInit(HINSTANCE hInstance, DWORD dwReasonForCall, LPVOID lpReserved)
 {
 	if (dwReasonForCall == DLL_PROCESS_ATTACH) {
-		globals::HookManager = std::make_unique<hooks::hookManager>(hInstance); // rest is initialized within hooks
+		globals::HookManager = std::make_unique<hooks::hook_manager>(hInstance); // rest is initialized within hooks
 	}
 	return true;
 }

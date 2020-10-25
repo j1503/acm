@@ -16,7 +16,7 @@ namespace cheats {
 		void run() noexcept override;
 		void on() noexcept override;
 		void off() noexcept override;
-		config::aimbot_conf* options() noexcept override;
+		config::aimbot_conf& options() noexcept override;
 	private:
 		playerent* findGoodTarget() noexcept;
 		bool isGoodTarget(playerent* ent) noexcept;

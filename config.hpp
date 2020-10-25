@@ -2,30 +2,33 @@
 #define ACM_CONFIG_HPP
 #pragma once
 
-#include <Windows.h>
-#include <memory>
-#include <vector>
-#include <string>
-#include <SDL_events.h>
-#include "json.hpp"
+#include "json.hpp" // json 
+#include <vector> // vector
+#include <string> // string
+#include <filesystem> // path, exists(), etc.
+#include <SDL_events.h> // SDLK_INSERT, SDLK_END, etc.
 
-class configManager {
+class config_manager {
+	using json = nlohmann::json;
 public:
 	class config {
-		friend class configManager;
+		friend class config_manager;
 	public:
 		config() = default;
-		config(configManager& parent);
-		config(configManager& parent, std::string name);
-		void load(nlohmann::json& j);
-		void save() noexcept;
-		void reset() noexcept;
+		config(const config_manager& parent);
+		config(const config_manager& parent, std::string name);
+		void load(json& j);
+		void save() const;
+		void reset();
 	private:
-		std::string toString() const noexcept;
-	private:
+		// get config as json
+		json get() const; 
+		// get config as json-string-dump
+		std::string dump() const; 
 	public:
 		std::string name;
-		// configs here - remember to add it to json too in options.cpp!
+		// configs here - remember to add it to json too in config.cpp!
+#pragma region cheat_configs
 		struct base_conf {
 			bool active = false;
 		};
@@ -81,48 +84,45 @@ public:
 			float linelength = 8.f;
 			bool teammates = false;
 		} barrelesp;
-		//
+#pragma endregion
 	private:
-		configManager& parent;
+		const config_manager& parent;
 	};
 public:
-	configManager() = default;
-	configManager(HWND hWnd);
-	~configManager();
-	// crud
-	bool createProfile(std::string name) noexcept;
-	configManager::config& getActiveProfile() noexcept;
-	// will return the currently active profile if the item at the index does not exist
-	configManager::config& getProfile(std::string name) noexcept;
-	// will return the currently active profile if the item at the index does not exist
-	configManager::config& getProfile(size_t index) noexcept;
-	void setActiveProfile(std::string name) noexcept;
-	void setActiveProfile(size_t index) noexcept;
-	bool renameProfile(std::string currentName, std::string newName) noexcept;
-	bool renameProfile(size_t index, std::string newName) noexcept;
-	bool deleteProfile(std::string name) noexcept;
-	bool deleteProfile(size_t index) noexcept;
+	config_manager();
+	~config_manager();
+	config_manager(const config_manager&) = delete;
+	config_manager& operator=(const config_manager&) = delete;
+	// load all
+	void load();
+	// save all
+	void save() const;
+	// create
+	void create(std::string name) noexcept;
+	// read/update
+	config& get(size_t idx);
+	const config& get(size_t idx) const;
+	config& active();
+	const config& active() const;
+	void setActive(size_t idx);
+	// delete 
+	bool remove();
 private:
-	configManager::config& findProfileByName(std::string& name);
-	bool isUniqueProfileName(std::string& name) const noexcept;
-	void createDefault() noexcept;
-	void loadFile();
-	void saveFile() noexcept;
-	void clearFile() noexcept;
-	void resetProfiles() noexcept;
-	static bool fileExists(const char* path) noexcept;
-public:
-	std::vector<std::unique_ptr<configManager::config>> profiles;
+	// resets all profiles and the current profile is set to a default profile (which is created)
+	void reset();
+	std::string dump() const;
+	
+	static std::string getProgramDataPath();
 private:
-	int activeIdx;
-	HANDLE hFile;
-	HWND hWnd;
-	char path[MAX_PATH];
+	std::vector<config> profiles;
+	size_t activeidx;
+	std::filesystem::path path;
+	static constexpr const char foldername[] = "ACM";
+	static constexpr const char filename[] = "config.json";
 };
 
 namespace globals {
-	inline std::unique_ptr<configManager> ConfigManager;
-	inline configManager::config* ActiveProfile = nullptr;
+	inline std::unique_ptr<config_manager> ConfigManager;
 }
 
 #endif
