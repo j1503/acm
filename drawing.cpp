@@ -31,8 +31,8 @@ bool drawing::worldToScreen(const vec& wrld, vec& screen)
 	// opengl is column major
 	using mat = float[4][4];
 	mat& vm = *(mat*)globals::MemoryManager->viewMatrix;
-	float width = *globals::MemoryManager->screenWidth;
-	float height = *globals::MemoryManager->screenHeight;
+	float width = (float)*globals::MemoryManager->screenWidth;
+	float height = (float)*globals::MemoryManager->screenHeight;
 
 	screen.x = vm[0][0] * wrld.x + vm[1][0] * wrld.y + vm[2][0] * wrld.z + vm[3][0];
 	screen.y = vm[0][1] * wrld.x + vm[1][1] * wrld.y + vm[2][1] * wrld.z + vm[3][1];
@@ -127,8 +127,8 @@ void drawing::drawBox(const vec2<float>& bottomleft, const vec2<float>& topright
 	glBegin(filled ? GL_QUADS : GL_LINE_LOOP);
 
 	// fabs prob not needed - just to be sure
-	int h = fabs(bottomleft.y - topright.y);
-	int w = fabs(topright.x - bottomleft.x);
+	float h = fabs(bottomleft.y - topright.y);
+	float w = fabs(topright.x - bottomleft.x);
 
 	glVertex2f(bottomleft.x, bottomleft.y);
 	glVertex2f(bottomleft.x, bottomleft.y - h);
@@ -161,8 +161,8 @@ void drawing::drawString(const color& color, const char* text, int x, int y, flo
 	glEnable(0xBE2u);
 	glEnable(0xDE1u);
 	glScalef(scale, scale, 1.f);
-	unsigned char c[3] = { color.r*255, color.g * 255, color.b * 255 };
-	globals::MemoryManager->callHudDrawString(c, text, x / scale, y / scale);
+	unsigned char c[3] = { char(color.r*255.f), char(color.g * 255.f), char(color.b * 255.f) };
+	globals::MemoryManager->callHudDrawString(c, text, int(x / scale), int(y / scale));
 	glScalef(1 / scale, 1 / scale, 1.f);
 	glDisable(0xDE1u);
 	glDisable(0xBE2u);
@@ -170,6 +170,6 @@ void drawing::drawString(const color& color, const char* text, int x, int y, flo
 
 color colors::toColor(float col[3])
 {
-	return color{ col[0], col[1], col[2] };
+	return { col[0], col[1], col[2] };
 }
 
