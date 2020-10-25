@@ -1,6 +1,7 @@
 #include "barrelesp.hpp"
 #include "../drawing.hpp"
 #include "../sdk/entity.hpp"
+#include "../sdk/game.hpp"
 
 cheats::barrelesp::barrelesp()
 	: cheats::cheat() {}
@@ -21,14 +22,14 @@ void cheats::barrelesp::run() noexcept
 		drawing::before2D();
 		playerent* lp = globals::MemoryManager->localPlayer;
 		for(size_t i = 1; i < *globals::MemoryManager->entityCount; ++i){
-			playerent* curr = (*globals::MemoryManager->entityList)[i];
-			if (curr) {
-				if(curr->health > 0){
-					bool ally = curr->team == lp->team;
+			playerent* ent = (*globals::MemoryManager->entityList)[i];
+			if (ent) {
+				if(ent->health > 0){
+					bool ally = m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team);
 					if (!this->options()->teammates && ally)
 						continue;
-					vec ray(1.f, curr->yaw, curr->pitch);
-					vec head = curr->origin;
+					vec ray(1.f, ent->yaw, ent->pitch);
+					vec head = ent->origin;
 					head.z += 0.25f;
 					ray = angleVector(ray);
 					vec transform = ray;

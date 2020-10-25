@@ -1,5 +1,6 @@
 #include "aimbot.hpp"
 #include "../drawing.hpp"
+#include "../sdk/game.hpp"
 
 cheats::aimbot::aimbot()
     : cheats::cheat() {}
@@ -28,8 +29,10 @@ void cheats::aimbot::run() noexcept
 
         playerent* lp = globals::MemoryManager->localPlayer;
 
-        // TODO FIX
-        // if ((lp->weaponsel->type == GUN_KNIFE) || (lp->weaponsel->type == GUN_GRENADE)) return; 
+        if (!globals::InputManager->leftMouseDown)
+            lp->attacking = false;
+
+        if ((lp->weaponsel->type == GUN_KNIFE) || (lp->weaponsel->type == GUN_GRENADE)) return; 
 
         playerent* best = nullptr;
 
@@ -49,11 +52,7 @@ void cheats::aimbot::run() noexcept
         }
         if (!best) return;
 
-        lp->attacking = false;
-        if (globals::InputManager->leftMouseDown ) {
-            lp->attacking = true;
-        }
-
+  
         if (curropt->range && (dist > curropt->rangevalue))
             return;
 
@@ -90,6 +89,10 @@ void cheats::aimbot::on() noexcept
 
 void cheats::aimbot::off() noexcept
 {
+    playerent* lp = globals::MemoryManager->localPlayer;
+    if (!globals::InputManager->leftMouseDown) {
+        lp->attacking = false;
+    }
     this->options()->active = false;
 }
 
@@ -133,7 +136,7 @@ bool cheats::aimbot::isGoodTarget(playerent* ent) noexcept
     if (ent == lp) return false;
     if (ent->state != CS_ALIVE) return false;
     if (ent->health <= 0) return false;
-    if ((ent->team == lp->team) && !this->options()->friendlyfire) return false;
+    if (m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team) && !this->options()->friendlyfire) return false;
     if (!globals::MemoryManager->callIsVisible(lp->origin, ent->origin)) return false;
     vec dummy;
     if (!drawing::worldToScreen(ent->origin, dummy)) return false;

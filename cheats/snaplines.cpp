@@ -2,6 +2,7 @@
 #include <memory>
 #include "../drawing.hpp"
 #include "../sdk/entity.hpp"
+#include "../sdk/game.hpp"
 
 cheats::snaplines::snaplines()
 	: cheats::cheat()
@@ -30,14 +31,14 @@ void cheats::snaplines::run() noexcept
 		float w = (float)*globals::MemoryManager->screenWidth;
 		float h = (float)*globals::MemoryManager->screenHeight;
 		for (size_t i = 1; i < *globals::MemoryManager->entityCount; ++i) {
-			playerent* curr = (*globals::MemoryManager->entityList)[i];
-			if (curr) {
-				if(curr->health > 0){
-					bool ally = curr->team == lp->team;
+			playerent* ent = (*globals::MemoryManager->entityList)[i];
+			if (ent) {
+				if(ent->health > 0){
+					bool ally = m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team);
 					if(!this->options()->teammates && ally)
 						continue;
-					vec pos = curr->origin;
-					pos.z -= curr->eyeheight;
+					vec pos = ent->origin;
+					pos.z -= ent->eyeheight;
 					vec poss;
 					if(drawing::worldToScreen(pos, poss)){
 						drawing::drawLine({ w/2.f, h }, { poss.x, poss.y }, this->options()->linewidth, 

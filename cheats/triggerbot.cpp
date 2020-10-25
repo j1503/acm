@@ -1,6 +1,7 @@
 #include "triggerbot.hpp"
 #include "../memory.hpp"
 #include "../input.hpp"
+#include "../sdk/game.hpp"
 
 #include <memory>
 
@@ -20,11 +21,12 @@ const char * cheats::triggerbot::name() const noexcept
 
 void cheats::triggerbot::run() noexcept
 {
-	if (this->options()->active) {
+	auto curropt = this->options();
+	if (curropt->active) {
 		if (globals::MemoryManager->localPlayer) {
 			playerent* lp = globals::MemoryManager->localPlayer;
-			// TODO FIX
-			// if ((lp->weaponsel->type == GUN_KNIFE) || (lp->weaponsel->type == GUN_GRENADE)) return; 
+			
+			if ((lp->weaponsel->type == GUN_KNIFE) || (lp->weaponsel->type == GUN_GRENADE)) return; 
 
 			int bone;
 			float distance;
@@ -34,27 +36,18 @@ void cheats::triggerbot::run() noexcept
 				ray.mul(raylength);
 				ray.add(lp->origin); */
 			playerent* ent = globals::MemoryManager->callRayIntersectEnt(&distance, &lp->origin, globals::MemoryManager->lookingAt, lp, &bone);
-			
-			if(lp->weaponsel->info.isauto)
+			bool ally = m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team);
 
 			if (ent) {
-				if (!this->options()->friendlyfire && (ent->team == lp->team))
-					return;
-				globals::MemoryManager->executeRet("attack");
-				//globals::InputManager->sendMouseEvent(SDL_BUTTON_LEFT, SDL_PRESSED);
-				//lp->attacking = true;
+
+				if (!curropt->friendlyfire && ally) return;
+
+				lp->attacking = true;
 			}
 			else {
-				if (!globals::InputManager->leftMouseDown);
-					//globals::MemoryManager->execute("attack", 0);
+				if (!globals::InputManager->leftMouseDown)
+					lp->attacking = false;
 			}
-
-			//else {
-			//	lp->attacking = false;
-			//	if (globals::InputManager->leftMouseDown) { // rapid-fire as a side effect, lol
-			//		lp->attacking = true;
-			//	}
-			//}
 		}
 	}
 }
@@ -67,6 +60,10 @@ void cheats::triggerbot::on() noexcept
 
 void cheats::triggerbot::off() noexcept
 {
+	playerent* lp = globals::MemoryManager->localPlayer;
+	if (!globals::InputManager->leftMouseDown) {
+		lp->attacking = false;
+	}
 	this->options()->active = false;
 }
 

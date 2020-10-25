@@ -1,6 +1,7 @@
 #include "esp.hpp"
 
 #include "../drawing.hpp"
+#include "../sdk/game.hpp"
 
 const char* cheats::esp::name() const noexcept
 {
@@ -20,7 +21,7 @@ void cheats::esp::run() noexcept
             if (ent == lp) continue;
             if (ent->state != CS_ALIVE) continue;
             if (ent->health <= 0) continue;
-            bool ally = lp->team == ent->team;
+            bool ally = m_teammode(*globals::MemoryManager->gamemode) && (ent->team == lp->team);
             if (!curropt->teammates && ally) continue;
             float dist = lp->origin.dist(ent->origin);
             if (dist < 3.f) continue;
@@ -29,9 +30,11 @@ void cheats::esp::run() noexcept
             head.z += ent->aboveeye;
             auto base = ent->origin;
             base.z -= ent->eyeheight;
-            
-            drawing::drawESPBox(base, head, 1.5f, ally ? colors::toColor(curropt->allyColor) : colors::toColor(curropt->enemyColor));
 
+            vec sbase;
+            if (!drawing::worldToScreen(base, sbase)) continue;
+
+            drawing::drawESPBox(base, head, 1.5f, ally ? colors::toColor(curropt->allyColor) : colors::toColor(curropt->enemyColor));
             if (curropt->healthbar)
                 drawing::drawHealthBar(base, head, ent->health);
         }
