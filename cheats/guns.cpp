@@ -21,7 +21,7 @@ const char* cheats::guns::name() const noexcept
 
 void cheats::guns::run() noexcept
 {
-	auto curropt = this->options();
+	auto& curropt = this->options();
 	auto lp = globals::MemoryManager->localPlayer;
 
 	for (size_t i = 0; i < NUMGUNS; ++i) {

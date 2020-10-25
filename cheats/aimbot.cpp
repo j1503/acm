@@ -17,7 +17,7 @@ const char* cheats::aimbot::name() const noexcept
 
 void cheats::aimbot::run() noexcept
 {
-    auto curropt = this->options();
+    auto& curropt = this->options();
     if (curropt.active) {
         if(curropt.showcircle){
         drawing::before2D();

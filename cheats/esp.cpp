@@ -18,7 +18,7 @@ const char* cheats::esp::name() const noexcept
 
 void cheats::esp::run() noexcept
 {
-    auto curropt = this->options();
+    auto& curropt = this->options();
     if (curropt.active) {
         drawing::before2D();
         playerent* lp = globals::MemoryManager->localPlayer;

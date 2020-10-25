@@ -21,7 +21,7 @@ const char * cheats::triggerbot::name() const noexcept
 
 void cheats::triggerbot::run() noexcept
 {
-	auto curropt = this->options();
+	auto& curropt = this->options();
 	if (curropt.active) {
 		if (globals::MemoryManager->localPlayer) {
 			playerent* lp = globals::MemoryManager->localPlayer;

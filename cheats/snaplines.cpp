@@ -19,7 +19,7 @@ const char * cheats::snaplines::name() const noexcept
 
 void cheats::snaplines::run() noexcept
 {
-	auto curropt = this->options();
+	auto& curropt = this->options();
 	if (curropt.active && globals::MemoryManager->entityList) {
 		drawing::before2D();
 
